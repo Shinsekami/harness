@@ -8,14 +8,14 @@
 <style>
 :root{
   --bg:#f7f7f4; --card:#ffffff; --ink:#1d1d1b; --muted:#5d5d58; --line:#e2e1da;
-  --accent:#4b5bd6; --accent-soft:#eceefb; --have-ink:#3341b0; --good:#1f7a4d; --good-soft:#e5f3eb;
+  --accent:#4b5bd6; --accent-soft:#eceefb; --have-ink:#3341b0; --zebra:#fafaf7; --good:#1f7a4d; --good-soft:#e5f3eb;
   --warn:#9a5b00; --warn-soft:#fbf0dc; --bad:#a23b3b; --bad-soft:#f8e6e6;
   --code:#f0efe9;
 }
 
 :root[data-theme="dark"]{
   --bg:#141413; --card:#1d1d1b; --ink:#ecebe6; --muted:#a4a39c; --line:#33322e;
-  --accent:#9aa5ff; --accent-soft:#252845; --have-ink:#b9c0ff; --good:#6fd3a0; --good-soft:#18301f;
+  --accent:#9aa5ff; --accent-soft:#252845; --have-ink:#b9c0ff; --zebra:#21211f; --good:#6fd3a0; --good-soft:#18301f;
   --warn:#f0b75a; --warn-soft:#33270f; --bad:#f08a8a; --bad-soft:#3a1d1d; --code:#262622;
 }
 *{box-sizing:border-box}
@@ -50,7 +50,7 @@ details.part>summary::-webkit-details-marker,details.sec>summary::-webkit-detail
 details.part>summary .num{color:var(--accent);font-weight:700;font-size:15px;min-width:1.4em}
 details.part>summary .t{flex:1;min-width:0}
 details.part>summary .t small{display:block;color:var(--muted);font-size:14px;font-weight:400;margin-top:2px}
-summary .chev{color:var(--accent);font-size:13px;line-height:1;transition:transform .2s ease;flex:none;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--bg);align-self:center}
+summary .chev{color:var(--accent);font-size:17px;line-height:1;transition:transform .2s ease;flex:none;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--bg);align-self:center}
 details[open]>summary .chev{transform:rotate(90deg)}
 summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:12px}
 .body{padding:0 20px 18px}
@@ -90,7 +90,7 @@ footer{color:var(--muted);font-size:13px;margin-top:26px}
 <style media="(prefers-color-scheme: dark)">
 :root:not([data-theme="light"]){
     --bg:#141413; --card:#1d1d1b; --ink:#ecebe6; --muted:#a4a39c; --line:#33322e;
-    --accent:#9aa5ff; --accent-soft:#252845; --have-ink:#b9c0ff; --good:#6fd3a0; --good-soft:#18301f;
+    --accent:#9aa5ff; --accent-soft:#252845; --have-ink:#b9c0ff; --zebra:#21211f; --good:#6fd3a0; --good-soft:#18301f;
     --warn:#f0b75a; --warn-soft:#33270f; --bad:#f08a8a; --bad-soft:#3a1d1d; --code:#262622;
   }
 </style>
@@ -99,6 +99,7 @@ summary .chev{transition:none}
 </style>
 <style media="(min-width:641px)">
 td code{white-space:nowrap}
+tbody tr:nth-child(even) td{background:var(--zebra)}
 td code wbr{display:none}
 </style>
 <style media="(max-width:980px)">
@@ -119,7 +120,11 @@ td code wbr{display:none}
   table.stack td::before{content:attr(data-l);display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600}
   table.stack tr{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:16px;row-gap:2px}
   table.stack td{flex:1 1 100%;min-width:0}
-  table.stack td.r{flex:0 0 auto;width:auto}
+  table.stack td{order:1}
+  table.stack td.k,table.stack td.h{order:0}
+  table.stack td.r{flex:0 0 auto;width:auto;order:4}
+  table.stack tr::after{content:"";flex-basis:100%;height:0;order:3}
+  table.stack td.s{flex:0 0 auto;width:auto;order:2}
   table.stack td.k{flex:0 0 auto;width:auto;font-size:17px}
   table.stack td.h{flex:1 1 0;width:auto;font-weight:600}
   table.stack td.k::before,table.stack td.h::before{display:none}
@@ -128,6 +133,7 @@ td code wbr{display:none}
   table.stack td{font-size:13.5px}
   table.stack td.h{font-size:14px}
   h2{font-size:18px}
+  .bar .note{display:none}
   details.part:not([open])>summary .t small{display:none}
   table.cmp td:nth-child(4){order:1;flex:0 0 auto;width:auto}
   table.cmp td:nth-child(4)::before{display:none}
@@ -218,16 +224,16 @@ td code wbr{display:none}
 <div class="tw"><table class="stack">
 <thead><tr><th>Check</th><th>Event</th><th class="r">Runs</th><th class="r">Deny</th><th class="r">Advise</th><th class="r">Fire rate</th><th class="r">Sessions</th></tr></thead>
 <tbody>
-<tr><td class="h" data-l="Check">shell guard (wrong shell syntax)</td><td data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">7</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.026</td><td class="r" data-l="Sessions">5</td></tr>
-<tr><td class="h" data-l="Check">long proof guard (no foreground waits)</td><td data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">5</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.019</td><td class="r" data-l="Sessions">1</td></tr>
-<tr><td class="h" data-l="Check">codify gate (fix written down)</td><td data-l="Event">turn end</td><td class="r" data-l="Runs">39</td><td class="r" data-l="Deny">5</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.128</td><td class="r" data-l="Sessions">2</td></tr>
-<tr><td class="h" data-l="Check">PR ready gate (local proof first)</td><td data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">4</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.015</td><td class="r" data-l="Sessions">1</td></tr>
-<tr><td class="h" data-l="Check">heredoc guard (escaping traps)</td><td data-l="Event">before tool</td><td class="r" data-l="Runs">249</td><td class="r" data-l="Deny">4</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.016</td><td class="r" data-l="Sessions">2</td></tr>
-<tr><td class="h" data-l="Check">path claims (two sessions, one file)</td><td data-l="Event">before tool</td><td class="r" data-l="Runs">103</td><td class="r" data-l="Deny">0</td><td class="r" data-l="Advise">4</td><td class="r" data-l="Fire rate">0.039</td><td class="r" data-l="Sessions">3</td></tr>
-<tr><td class="h" data-l="Check">safe file rewrite (temp file and swap)</td><td data-l="Event">before tool</td><td class="r" data-l="Runs">47</td><td class="r" data-l="Deny">3</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.064</td><td class="r" data-l="Sessions">1</td></tr>
-<tr><td class="h" data-l="Check">focus wait gate (no idle turn end)</td><td data-l="Event">turn end</td><td class="r" data-l="Runs">39</td><td class="r" data-l="Deny">3</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.077</td><td class="r" data-l="Sessions">1</td></tr>
-<tr><td class="h" data-l="Check">model floor guard (spawn routing)</td><td data-l="Event">before spawn</td><td class="r" data-l="Runs">5</td><td class="r" data-l="Deny">2</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.400</td><td class="r" data-l="Sessions">2</td></tr>
-<tr><td class="h" data-l="Check">durability guard (new, see Part 2)</td><td data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">0</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.000</td><td class="r" data-l="Sessions">0</td></tr>
+<tr><td class="h" data-l="Check">shell guard (wrong shell syntax)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">7</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.026</td><td class="r" data-l="Sessions">5</td></tr>
+<tr><td class="h" data-l="Check">long proof guard (no foreground waits)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">5</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.019</td><td class="r" data-l="Sessions">1</td></tr>
+<tr><td class="h" data-l="Check">codify gate (fix written down)</td><td class="s" data-l="Event">turn end</td><td class="r" data-l="Runs">39</td><td class="r" data-l="Deny">5</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.128</td><td class="r" data-l="Sessions">2</td></tr>
+<tr><td class="h" data-l="Check">PR ready gate (local proof first)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">4</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.015</td><td class="r" data-l="Sessions">1</td></tr>
+<tr><td class="h" data-l="Check">heredoc guard (escaping traps)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">249</td><td class="r" data-l="Deny">4</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.016</td><td class="r" data-l="Sessions">2</td></tr>
+<tr><td class="h" data-l="Check">path claims (two sessions, one file)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">103</td><td class="r" data-l="Deny">0</td><td class="r" data-l="Advise">4</td><td class="r" data-l="Fire rate">0.039</td><td class="r" data-l="Sessions">3</td></tr>
+<tr><td class="h" data-l="Check">safe file rewrite (temp file and swap)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">47</td><td class="r" data-l="Deny">3</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.064</td><td class="r" data-l="Sessions">1</td></tr>
+<tr><td class="h" data-l="Check">focus wait gate (no idle turn end)</td><td class="s" data-l="Event">turn end</td><td class="r" data-l="Runs">39</td><td class="r" data-l="Deny">3</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.077</td><td class="r" data-l="Sessions">1</td></tr>
+<tr><td class="h" data-l="Check">model floor guard (spawn routing)</td><td class="s" data-l="Event">before spawn</td><td class="r" data-l="Runs">5</td><td class="r" data-l="Deny">2</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.400</td><td class="r" data-l="Sessions">2</td></tr>
+<tr><td class="h" data-l="Check">durability guard (new, see Part 2)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">0</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.000</td><td class="r" data-l="Sessions">0</td></tr>
 </tbody></table></div>
 <p class="note">Basis: <code>fire_<wbr>rates.py --days 14</code> on 13 Oct. Turn-end runs are exact. Other runs are derived from the event log and the current manifest, so they are close, not exact.</p>
 </div>
@@ -257,18 +263,18 @@ td code wbr{display:none}
 <div class="tw"><table class="stack">
 <thead><tr><th>Class</th><th>The work</th><th>Floor</th><th class="r">Cost a run</th><th>Before</th><th class="r">Cost before</th><th>Runs at the floor</th></tr></thead>
 <tbody>
-<tr><td class="h" data-l="Class">collect</td><td data-l="The work">list every match across many files</td><td data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0065</td><td data-l="Before">haiku high</td><td class="r" data-l="Cost before">$0.0113</td><td data-l="Runs at the floor">10/10</td></tr>
-<tr><td class="h" data-l="Class">quote</td><td data-l="The work">exact quotes from a long transcript</td><td data-l="Floor">haiku high</td><td class="r" data-l="Cost a run">$0.0124</td><td data-l="Before">haiku high</td><td class="r" data-l="Cost before">$0.0124</td><td data-l="Runs at the floor">10/10</td></tr>
-<tr><td class="h" data-l="Class">compact</td><td data-l="The work">condense a log to a word cap</td><td data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0031</td><td data-l="Before">haiku high</td><td class="r" data-l="Cost before">$0.0037</td><td data-l="Runs at the floor">10/10</td></tr>
-<tr><td class="h" data-l="Class">sql</td><td data-l="The work">one query with dedupe and an empty week</td><td data-l="Floor">haiku medium</td><td class="r" data-l="Cost a run">$0.0065</td><td data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0475</td><td data-l="Runs at the floor">10/10</td></tr>
-<tr><td class="h" data-l="Class">code</td><td data-l="The work">a small module to a written spec</td><td data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0043</td><td data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0534</td><td data-l="Runs at the floor">10/10, hard 6/6</td></tr>
-<tr><td class="h" data-l="Class">refute</td><td data-l="The work">find planted bugs among ten claims</td><td data-l="Floor">haiku high</td><td class="r" data-l="Cost a run">$0.0200</td><td data-l="Before">opus medium</td><td class="r" data-l="Cost before">$0.2718</td><td data-l="Runs at the floor">10/10, hard 6/6</td></tr>
-<tr><td class="h" data-l="Class">judge</td><td data-l="The work">pick the one draft that passes six rules</td><td data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0021</td><td data-l="Before">opus high</td><td class="r" data-l="Cost before">not run</td><td data-l="Runs at the floor">10/10, hard 6/6</td></tr>
-<tr><td class="h" data-l="Class">report</td><td data-l="The work">a small HTML report under seven rules</td><td data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0044</td><td data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0491</td><td data-l="Runs at the floor">10/10</td></tr>
-<tr><td class="h" data-l="Class">visual</td><td data-l="The work">name defects in two screenshots</td><td data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0029</td><td data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0459</td><td data-l="Runs at the floor">10/10</td></tr>
-<tr><td class="h" data-l="Class">code_spec</td><td data-l="The work">code class, marked by a line in the brief</td><td data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0033</td><td data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0466</td><td data-l="Runs at the floor">10/10</td></tr>
-<tr><td class="h" data-l="Class">refute_spec</td><td data-l="The work">refute class, marked by a line in the brief</td><td data-l="Floor">haiku medium</td><td class="r" data-l="Cost a run">$0.0046</td><td data-l="Before">opus medium</td><td class="r" data-l="Cost before">$0.0930</td><td data-l="Runs at the floor">10/10</td></tr>
-<tr><td class="h" data-l="Class">judge_rules</td><td data-l="The work">judge class, marked by a line in the brief</td><td data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0025</td><td data-l="Before">opus high</td><td class="r" data-l="Cost before">$0.0766</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">collect</td><td data-l="The work">list every match across many files</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0065</td><td class="s" data-l="Before">haiku high</td><td class="r" data-l="Cost before">$0.0113</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">quote</td><td data-l="The work">exact quotes from a long transcript</td><td class="s" data-l="Floor">haiku high</td><td class="r" data-l="Cost a run">$0.0124</td><td class="s" data-l="Before">haiku high</td><td class="r" data-l="Cost before">$0.0124</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">compact</td><td data-l="The work">condense a log to a word cap</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0031</td><td class="s" data-l="Before">haiku high</td><td class="r" data-l="Cost before">$0.0037</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">sql</td><td data-l="The work">one query with dedupe and an empty week</td><td class="s" data-l="Floor">haiku medium</td><td class="r" data-l="Cost a run">$0.0065</td><td class="s" data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0475</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">code</td><td data-l="The work">a small module to a written spec</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0043</td><td class="s" data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0534</td><td data-l="Runs at the floor">10/10, hard 6/6</td></tr>
+<tr><td class="h" data-l="Class">refute</td><td data-l="The work">find planted bugs among ten claims</td><td class="s" data-l="Floor">haiku high</td><td class="r" data-l="Cost a run">$0.0200</td><td class="s" data-l="Before">opus medium</td><td class="r" data-l="Cost before">$0.2718</td><td data-l="Runs at the floor">10/10, hard 6/6</td></tr>
+<tr><td class="h" data-l="Class">judge</td><td data-l="The work">pick the one draft that passes six rules</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0021</td><td class="s" data-l="Before">opus high</td><td class="r" data-l="Cost before">not run</td><td data-l="Runs at the floor">10/10, hard 6/6</td></tr>
+<tr><td class="h" data-l="Class">report</td><td data-l="The work">a small HTML report under seven rules</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0044</td><td class="s" data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0491</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">visual</td><td data-l="The work">name defects in two screenshots</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0029</td><td class="s" data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0459</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">code_spec</td><td data-l="The work">code class, marked by a line in the brief</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0033</td><td class="s" data-l="Before">sonnet medium</td><td class="r" data-l="Cost before">$0.0466</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">refute_spec</td><td data-l="The work">refute class, marked by a line in the brief</td><td class="s" data-l="Floor">haiku medium</td><td class="r" data-l="Cost a run">$0.0046</td><td class="s" data-l="Before">opus medium</td><td class="r" data-l="Cost before">$0.0930</td><td data-l="Runs at the floor">10/10</td></tr>
+<tr><td class="h" data-l="Class">judge_rules</td><td data-l="The work">judge class, marked by a line in the brief</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0025</td><td class="s" data-l="Before">opus high</td><td class="r" data-l="Cost before">$0.0766</td><td data-l="Runs at the floor">10/10</td></tr>
 </tbody></table></div>
 <p class="note">Basis: the effort bench (<code>run.mjs</code>, <code>aggregate.py</code>, <code>build_<wbr>floor_<wbr>table.py</code>), 8 Oct 2026. Long multi-file builds keep sonnet medium, because no fixture here measures them. A refute pass on haiku high matched opus medium on planted-bug recall.</p>
 </div>
