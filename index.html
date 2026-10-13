@@ -64,6 +64,7 @@ table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
 th{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--bg)}
 td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td{font-weight:600}
 td.k{font-weight:700;color:var(--accent);font-size:15px;white-space:nowrap}
 p code{white-space:nowrap}
 p code wbr{display:none}
@@ -114,8 +115,8 @@ td code wbr{display:none}
   .body{padding:0 14px 14px}
   table.stack thead{display:none}
   table.stack,table.stack tbody,table.stack tr,table.stack td{display:block;width:100%}
-  table.stack tr{border:1px solid var(--line);border-radius:8px;margin:0 0 10px;padding:6px 10px}
-  table.stack td{border:none;padding:4px 0;text-align:left}
+  table.stack tr{border:1px solid var(--line);border-radius:8px;margin:0 0 8px;padding:5px 10px}
+  table.stack td{border:none;padding:2px 0;text-align:left}
   table.stack td.r{text-align:left;white-space:normal}
   table.stack td::before{content:attr(data-l);display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600}
   table.stack tr{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:16px;row-gap:2px}
@@ -125,6 +126,8 @@ td code wbr{display:none}
   table.stack td.r{flex:0 0 auto;width:auto;order:4}
   table.stack tr::after{content:"";flex-basis:100%;height:0;order:3}
   table.stack td.s{flex:0 0 auto;width:auto;order:2}
+  table.stack td.h:first-child{flex:1 1 100%}
+  table.stack tr.tot{background:var(--accent-soft)}
   table.stack td.k{flex:0 0 auto;width:auto;font-size:17px}
   table.stack td.h{flex:1 1 0;width:auto;font-weight:600}
   table.stack td.k::before,table.stack td.h::before{display:none}
@@ -154,7 +157,7 @@ td code wbr{display:none}
 <p class="sub">A public report for the KOZHA.I setup and its agent. Built 13 Oct 2026. Every number names its basis. The harness itself lives in a private repo.</p>
 
 <div class="answer">
-<p class="lede"><b>The answer.</b> Our harness is a single hook dispatcher running 119 checks, plus child sessions with receipts and a measured model floor. From the KOZHA.I setup we took two things: a fire line per check, and a durability guard. We give back twelve ranked ideas. The top two are one hook process per event and an honest fire rate per check.</p>
+<p class="lede"><b>The answer.</b> Our harness is one hook dispatcher running 119 checks, child sessions with receipts, and a measured model floor. From the KOZHA.I setup we took a fire line per check and a durability guard. We give back twelve ranked ideas, led by one hook process per event.</p>
 </div>
 
 <div class="tiles" aria-label="Key numbers">
@@ -212,7 +215,7 @@ td code wbr{display:none}
 <tr><td class="h" data-l="Hook event">After a tool call</td><td class="r" data-l="Checks">9</td><td class="r" data-l="Deadline">90 s</td><td data-l="Typical job">Check text a write just added</td></tr>
 <tr><td class="h" data-l="Hook event">On each prompt</td><td class="r" data-l="Checks">15</td><td class="r" data-l="Deadline">120 s</td><td data-l="Typical job">Name the right skill, keep standing orders</td></tr>
 <tr><td class="h" data-l="Hook event">At turn end</td><td class="r" data-l="Checks">33</td><td class="r" data-l="Deadline">90 s</td><td data-l="Typical job">Refuse "done" without proof</td></tr>
-<tr><td class="h" data-l="Hook event"><b>Total</b></td><td class="r" data-l="Checks"><b>119</b></td><td class="r" data-l="Deadline">90 to 120 s</td><td data-l="Typical job">Plus 13 hooks registered directly</td></tr>
+<tr class="tot"><td class="h" data-l="Hook event"><b>Total</b></td><td class="r" data-l="Checks"><b>119</b></td><td class="r" data-l="Deadline">90 to 120 s</td><td data-l="Note">Plus 13 hooks registered directly</td></tr>
 </tbody></table></div>
 <div class="side">
 <p><b>Kill switches.</b> Every check has one. <code>*_<wbr>CHECK=off</code> turns a check off. <code>*_<wbr>OK="&lt;reason&gt;"</code> lets one act through and logs the reason.</p>
