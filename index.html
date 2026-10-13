@@ -163,7 +163,6 @@ td code wbr{display:none}
   .tile{padding:8px 9px}
   .tile .n{font-size:19px}
   .tile .l{font-size:12px;line-height:1.3}
-  table.stack tbody tr:not(:first-child) td::before{display:none}
   table.duo tbody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   table.duo tbody tr{margin:0}
   summary .chev{width:36px;height:36px;font-size:26px;border:2px solid var(--accent);background:var(--accent-soft)}
@@ -190,20 +189,55 @@ table.cmp td{order:0;flex:none;width:auto;min-width:0;font-size:14px}
 table.cmp td:nth-child(1){grid-column:1;grid-row:1}
 table.cmp td:nth-child(2){grid-column:2;grid-row:1;font-weight:600}
 table.cmp td:nth-child(4){grid-column:3;grid-row:1;order:0}
-table.cmp td:nth-child(2)::after{content:" +";color:var(--accent);font-weight:700}
-table.cmp tr.open td:nth-child(2)::after{content:" -"}
 table.cmp td:nth-child(3),table.cmp td:nth-child(5){grid-column:1 / -1;display:none;order:0;font-size:14px}
 table.cmp tr.open td:nth-child(3),table.cmp tr.open td:nth-child(5){display:block}
 table.cmp tbody tr td:nth-child(3)::before,table.cmp tbody tr td:nth-child(5)::before{display:inline!important;content:attr(data-l) ": ";font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase}
 table.p3t td:nth-child(4),table.p3t td:nth-child(5){display:none}
 table.p3t tr.open td:nth-child(4),table.p3t tr.open td:nth-child(5){display:block}
-table.p3t td:nth-child(3)::after{content:"Tap for what to copy and how to check +";display:block;margin-top:6px;color:var(--accent);font-weight:600;font-size:13px}
-table.p3t tr.open td:nth-child(3)::after{content:"Hide what to copy and how to check -"}
 table.p3t tbody tr td:nth-child(4)::before,table.p3t tbody tr td:nth-child(5)::before{display:block!important;content:attr(data-l)}
 table.p3t td:nth-child(n+4) code{display:block;width:fit-content;max-width:100%;white-space:normal;margin:4px 0;word-break:normal;overflow-wrap:anywhere}
 table.p3t .sep{display:none}
 table.p3t td:nth-child(n+4) code wbr{display:none}
 </style>
+<style media="(max-width:640px)">
+/* round 5: every number keeps its label; fixed grids; inline code; chevrons */
+table.stack.stack td::before{display:block;content:attr(data-l);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;line-height:1.3;margin:0}
+table.stack.stack td.h::before{display:none}
+table.stack.stack td.k::before{display:inline;margin-right:5px}
+table.stack.stack.tm td.h::before{display:block}
+table.stack.stack td code wbr{display:none}
+table.stack.stack td{font-size:14px}
+table.stack.stack.cmp td:nth-child(4)::before{display:none}
+table.stack.stack.cmp td:nth-child(3)::before,table.stack.stack.cmp td:nth-child(5)::before{display:inline!important;font-size:12px}
+table.cmp.cmp tbody tr{grid-template-columns:auto minmax(0,1fr) auto}
+table.cmp.cmp td:nth-child(2)::after{content:"";display:inline-block;width:7px;height:7px;border-right:2.5px solid var(--accent);border-bottom:2.5px solid var(--accent);transform:rotate(-45deg);margin:0 2px 2px 10px}
+table.cmp.cmp tr.open td:nth-child(2)::after{transform:rotate(45deg)}
+table.stack.stack.nt tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:16px;row-gap:5px;align-items:baseline}
+table.stack.stack.nt tr::after{display:none}
+table.stack.stack.nt td{grid-column:1 / -1;order:0;flex:none;width:auto;white-space:normal}
+table.stack.stack.nt td.r,table.stack.stack.nt td.s{grid-column:auto;display:flex;justify-content:space-between;align-items:baseline;gap:8px;text-align:left}
+table.stack.stack.nt td.r::before,table.stack.stack.nt td.s::before{display:block;flex:none}
+table.stack.stack.nt td.h{font-weight:600}
+table.stack.stack.fl td.s{grid-column:1 / -1}
+table.stack.stack.fo tbody tr{grid-template-columns:minmax(0,1fr) auto}
+table.stack.stack.fo td.s{font-weight:600;white-space:nowrap}
+table.stack.stack.fo td.r{white-space:nowrap}
+.nw{white-space:nowrap}
+table.stack.stack.ev tbody tr{display:flex;flex-direction:column;align-items:stretch;gap:3px;padding:8px 10px}
+table.stack.stack.ev tr::after{display:none}
+table.stack.stack.ev td{flex:none;width:auto;order:0}
+table.stack.stack.ev td.r{order:1;font-size:22px;font-weight:700;line-height:1.15;white-space:normal}
+table.stack.stack.ev td.h{order:2;font-size:14px;font-weight:600}
+table.stack.stack.ev td:last-child{order:3;font-size:13px;color:var(--muted)}
+table.stack.stack.ev td:last-child::before{display:inline;content:attr(data-l) ": "}
+table.stack.stack.oq td:nth-child(n+3){flex:1 1 100%}
+table.p3t.p3t td code{display:inline;width:auto;max-width:none;margin:0;white-space:normal;word-break:normal;overflow-wrap:break-word}
+table.p3t.p3t .sep{display:inline}
+table.p3t.p3t td:nth-child(3)::after{content:"Tap for what to copy and how to check";display:block;width:fit-content;margin-top:6px;padding-right:20px;color:var(--accent);font-weight:600;font-size:13px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M3 1l4 4-4 4' fill='none' stroke='%237b88e8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right center/10px 10px}
+table.p3t.p3t tr.open td:nth-child(3)::after{content:"Hide what to copy and how to check";background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1 3l4 4 4-4' fill='none' stroke='%237b88e8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+table.p3t.p3t td:nth-child(n+4)::before{display:block!important}
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -244,7 +278,7 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
   <div><b>4. Gate</b>Checks refuse a bad act the moment it happens.</div>
   <div><b>5. Close</b>A turn-end check refuses "done" without proof.</div>
 </div>
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack dec">
 <thead><tr><th>Decision</th><th>Who decides</th><th>The rule behind it</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Decision">Which skill does the job</td><td data-l="Who decides">The main session, nudged by a hook</td><td data-l="The rule behind it">A skill is read in full before use. A hook names the matching one.</td></tr>
@@ -263,7 +297,7 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <p>Claude Code can start one process per hook. We had about 30 starting at once on every call. Now one dispatcher process runs every check of an event. Each check has its own time budget. A hung check decides nothing, and the rest still run.</p>
 <p>If the dispatcher itself crashes before a tool call, the call is blocked. A check is added in one manifest file, then tested both ways.</p>
 <div class="two">
-<div class="tw" style="margin-top:0"><table class="stack duo">
+<div class="tw" style="margin-top:0"><table class="stack nt hk">
 <thead><tr><th>Hook event</th><th class="r">Checks</th><th class="r">Deadline</th><th>Typical job</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Hook event">Before a tool call</td><td class="r" data-l="Checks">62</td><td class="r" data-l="Deadline">90 s</td><td data-l="Typical job">Refuse a risky command or edit</td></tr>
@@ -273,13 +307,13 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <tr class="tot"><td class="h" data-l="Hook event"><b>Total</b></td><td class="r" data-l="Checks"><b>119</b></td><td class="r" data-l="Deadline">90 to 120 s</td><td data-l="Note">Plus 13 hooks registered directly</td></tr>
 </tbody></table></div>
 <div class="side">
-<p><b>Kill switches.</b> Every check has one. <code>*_<wbr>CHECK=off</code> turns a check off. <code>*_<wbr>OK="&lt;reason&gt;"</code> lets one act through and logs the reason.</p>
+<p><b>Kill switches.</b> Every check has one. <code><span class="nw">*_<wbr>CHECK=off</span></code> turns a check off. <code><span class="nw">*_<wbr>OK="&lt;reason&gt;"</span></code> lets one act through and logs the reason.</p>
 <p><b>The rule of thumb.</b> A written rule is forgotten under momentum. A script is not. So each repeated mistake becomes a law and, when checkable, a check.</p>
 </div>
 </div>
 <h3 style="margin-top:6px">Fire lines, first window</h3>
 <p>Each check now logs when it refuses or warns. The window opened at 13:15 local time on 13 Oct. At build time it held 883 hook events across 108 checks. Fire means deny, ask or advise. The busiest checks:</p>
-<div class="tw"><table class="stack duo">
+<div class="tw"><table class="stack nt fl">
 <thead><tr><th>Check</th><th>Event</th><th class="r">Runs</th><th class="r">Deny</th><th class="r">Advise</th><th class="r">Fire rate</th><th class="r">Sessions</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Check">shell guard (wrong shell syntax)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">7</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.026</td><td class="r" data-l="Sessions">5</td></tr>
@@ -293,7 +327,7 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <tr><td class="h" data-l="Check">model floor guard (spawn routing)</td><td class="s" data-l="Event">before spawn</td><td class="r" data-l="Runs">5</td><td class="r" data-l="Deny">2</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.400</td><td class="r" data-l="Sessions">2</td></tr>
 <tr><td class="h" data-l="Check">durability guard (new, see Part 2)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">0</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.000</td><td class="r" data-l="Sessions">0</td></tr>
 </tbody></table></div>
-<p class="note">Basis: <code>fire_<wbr>rates.py --days 14</code> on 13 Oct. Turn-end runs are exact. Other runs are derived from the event log and the current manifest, so they are close, not exact.</p>
+<p class="note">Basis: <code><span class="nw">fire_<wbr>rates.py</span> <span class="nw">--days 14</span></code> on 13 Oct. Turn-end runs are exact. Other runs are derived from the event log and the current manifest, so they are close, not exact.</p>
 </div>
 </details>
 
@@ -301,15 +335,15 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <summary><span class="t"><h3>1.3 Sessions, children and task boards</h3><small>Work moves between sessions as board rows and child sessions, each with a receipt.</small></span><span class="chev" aria-hidden="true"></span></summary>
 <div class="secbody">
 <p>We do not keep standing peer sessions. A main session spawns a child per task, then closes it. Every hand-off leaves a record another session can read.</p>
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack tl2">
 <thead><tr><th>Tool</th><th>What it does</th><th>The command</th><th>Why it exists</th></tr></thead>
 <tbody>
-<tr><td class="h" data-l="Tool">Session tree</td><td data-l="What it does">Starts a child with a parent, a brief file and an effort. Depth 4, width 4.</td><td data-l="The command"><code>session_<wbr>tree.py spawn --name X --prompt-file B --effort E</code></td><td data-l="Why it exists">Raw background sessions got lost. A receipt gives an exact count and a clean end.</td></tr>
-<tr><td class="h" data-l="Tool">Child wait</td><td data-l="What it does">Waits in the background. Exit 0 done, 2 blocked, 1 failed, 3 timed out.</td><td data-l="The command"><code>session_<wbr>tree.py wait &lt;id&gt;</code>, then <code>rm &lt;id&gt;</code></td><td data-l="Why it exists">An idle child with no report once read as done. Now that is "blocked".</td></tr>
-<tr><td class="h" data-l="Tool">Task board</td><td data-l="What it does">Create, attach, delegate to a preset child, comment with notify, collect.</td><td data-l="The command"><code>task_<wbr>board.py create | delegate --preset | collect</code></td><td data-l="Why it exists">Work handed between sessions got lost.</td></tr>
-<tr><td class="h" data-l="Tool">Recall</td><td data-l="What it does">Full-text search over memory files and past transcripts.</td><td data-l="The command"><code>recall.py search "&lt;words&gt;"</code></td><td data-l="Why it exists">A past fact is looked up, never guessed.</td></tr>
-<tr><td class="h" data-l="Tool">Task status gate</td><td data-l="What it does">Every row is true at turn end. A stale "in progress" row is refused.</td><td data-l="The command"><code>todo_<wbr>sweep.py</code></td><td data-l="Why it exists">Sessions ended with rows open and nobody owning them.</td></tr>
-<tr><td class="h" data-l="Tool">Future task</td><td data-l="What it does">A brief file plus a trigger. The watcher starts the worker on the event.</td><td data-l="The command"><code>automations.py create</code></td><td data-l="Why it exists">An agent started early and left waiting burns tokens and drifts.</td></tr>
+<tr><td class="h" data-l="Tool">Session tree</td><td data-l="What it does">Starts a child with a parent, a brief file and an effort. Depth 4, width 4.</td><td data-l="The command"><code><span class="nw">session_<wbr>tree.py</span> <span class="nw">spawn</span> <span class="nw">--name X</span> <span class="nw">--prompt-file B</span> <span class="nw">--effort E</span></code></td><td data-l="Why it exists">Raw background sessions got lost. A receipt gives an exact count and a clean end.</td></tr>
+<tr><td class="h" data-l="Tool">Child wait</td><td data-l="What it does">Waits in the background. Exit 0 done, 2 blocked, 1 failed, 3 timed out.</td><td data-l="The command"><code><span class="nw">session_<wbr>tree.py</span> <span class="nw">wait</span> <span class="nw">&lt;id&gt;</span></code>, then <code><span class="nw">rm</span> <span class="nw">&lt;id&gt;</span></code></td><td data-l="Why it exists">An idle child with no report once read as done. Now that is "blocked".</td></tr>
+<tr><td class="h" data-l="Tool">Task board</td><td data-l="What it does">Create, attach, delegate to a preset child, comment with notify, collect.</td><td data-l="The command"><code><span class="nw">task_<wbr>board.py</span> <span class="nw">create</span> <span class="nw">|</span> <span class="nw">delegate</span> <span class="nw">--preset</span> <span class="nw">|</span> <span class="nw">collect</span></code></td><td data-l="Why it exists">Work handed between sessions got lost.</td></tr>
+<tr><td class="h" data-l="Tool">Recall</td><td data-l="What it does">Full-text search over memory files and past transcripts.</td><td data-l="The command"><code><span class="nw">recall.py</span> <span class="nw">search</span> <span class="nw">"&lt;words&gt;"</span></code></td><td data-l="Why it exists">A past fact is looked up, never guessed.</td></tr>
+<tr><td class="h" data-l="Tool">Task status gate</td><td data-l="What it does">Every row is true at turn end. A stale "in progress" row is refused.</td><td data-l="The command"><code><span class="nw">todo_<wbr>sweep.py</span></code></td><td data-l="Why it exists">Sessions ended with rows open and nobody owning them.</td></tr>
+<tr><td class="h" data-l="Tool">Future task</td><td data-l="What it does">A brief file plus a trigger. The watcher starts the worker on the event.</td><td data-l="The command"><code><span class="nw">automations.py</span> <span class="nw">create</span></code></td><td data-l="Why it exists">An agent started early and left waiting burns tokens and drifts.</td></tr>
 </tbody></table></div>
 </div>
 </details>
@@ -317,8 +351,8 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <details class="sec" id="p1-floor">
 <summary><span class="t"><h3>1.4 The model floor</h3><small>Each task class runs at the cheapest model and effort that passed 10 of 10 planted-answer runs.</small></span><span class="chev" aria-hidden="true"></span></summary>
 <div class="secbody">
-<p>We built a bench with exact scorers and planted answers. Each class ran every model and effort cell. The floor is the cheapest cell that passed every run. Going above it needs a written <code>FLOOR_<wbr>OVER: &lt;reason&gt;</code> line. Public or irreversible work goes one tier up and gets a check from another model family.</p>
-<div class="tw"><table class="stack">
+<p>We built a bench with exact scorers and planted answers. Each class ran every model and effort cell. The floor is the cheapest cell that passed every run. Going above it needs a written <code><span class="nw">FLOOR_<wbr>OVER:</span> <span class="nw">&lt;reason&gt;</span></code> line. Public or irreversible work goes one tier up and gets a check from another model family.</p>
+<div class="tw"><table class="stack nt fo">
 <thead><tr><th>Class</th><th>The work</th><th>Floor</th><th class="r">Cost a run</th><th>Before</th><th class="r">Cost before</th><th>Runs at the floor</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Class">collect</td><td data-l="The work">list every match across many files</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0065</td><td class="s" data-l="Before">haiku high</td><td class="r" data-l="Cost before">$0.0113</td><td data-l="Runs at the floor">10/10</td></tr>
@@ -334,7 +368,7 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <tr><td class="h" data-l="Class">refute_spec</td><td data-l="The work">refute class, marked by a line in the brief</td><td class="s" data-l="Floor">haiku medium</td><td class="r" data-l="Cost a run">$0.0046</td><td class="s" data-l="Before">opus medium</td><td class="r" data-l="Cost before">$0.0930</td><td data-l="Runs at the floor">10/10</td></tr>
 <tr><td class="h" data-l="Class">judge_rules</td><td data-l="The work">judge class, marked by a line in the brief</td><td class="s" data-l="Floor">haiku low</td><td class="r" data-l="Cost a run">$0.0025</td><td class="s" data-l="Before">opus high</td><td class="r" data-l="Cost before">$0.0766</td><td data-l="Runs at the floor">10/10</td></tr>
 </tbody></table></div>
-<p class="note">Basis: the effort bench (<code>run.mjs</code>, <code>aggregate.py</code>, <code>build_<wbr>floor_<wbr>table.py</code>), 8 Oct 2026. Long multi-file builds keep sonnet medium, because no fixture here measures them. A refute pass on haiku high matched opus medium on planted-bug recall.</p>
+<p class="note">Basis: the effort bench (<code><span class="nw">run.mjs</span></code>, <code><span class="nw">aggregate.py</span></code>, <code><span class="nw">build_<wbr>floor_<wbr>table.py</span></code>), 8 Oct 2026. Long multi-file builds keep sonnet medium, because no fixture here measures them. A refute pass on haiku high matched opus medium on planted-bug recall.</p>
 </div>
 </details>
 
@@ -342,7 +376,7 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <summary><span class="t"><h3>1.5 One real day: 13 Oct 2026</h3><small>One main session ran 17 child sessions. The day logged 24 tooling changes.</small></span><span class="chev" aria-hidden="true"></span></summary>
 <div class="secbody">
 <p>This report is part of the day it describes. The main session opened at 08:22 local time and handed work down all morning.</p>
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack tm">
 <thead><tr><th>Time (local)</th><th>What happened</th><th>Which tool carried it</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Time (local)">08:22</td><td data-l="What happened">Main session opens and reads the open work left from yesterday.</td><td data-l="Which tool carried it">task status sweep, recall</td></tr>
@@ -355,7 +389,7 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <details class="sec nest" id="p1-day-more">
 <summary><span class="t"><h3>More of the day: 2 more timeline rows</h3><small>The daily search loop, and the branch merge, tag-manager and homepage round.</small></span><span class="chev" aria-hidden="true"></span></summary>
 <div class="secbody">
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack tm">
 <thead><tr><th>Time (local)</th><th>What happened</th><th>Which tool carried it</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Time (local)">09:04 to 09:51</td><td data-l="What happened">The daily search loop and the open-commitments sweep run as children.</td><td data-l="Which tool carried it">scheduled driver, then an agent pass</td></tr>
@@ -366,7 +400,7 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <details class="sec nest" id="p1-day-measures">
 <summary><span class="t"><h3>The day in eight measures</h3><small>Tool calls, spawns, child sessions and tooling changes, each with its basis.</small></span><span class="chev" aria-hidden="true"></span></summary>
 <div class="secbody">
-<div class="tw"><table class="stack duo">
+<div class="tw"><table class="stack duo ev">
 <thead><tr><th>Measure, 13 Oct to about 12:00 UTC</th><th class="r">Value</th><th>Basis</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Measure">Main sessions active</td><td class="r" data-l="Value">29</td><td data-l="Basis">transcripts with a row stamped 13 Oct</td></tr>
@@ -386,11 +420,11 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <details class="sec" id="p1-numbers">
 <summary><span class="t"><h3>1.6 Measured numbers, each with its basis</h3><small>Nine numbers we lean on, and how each was counted.</small></span><span class="chev" aria-hidden="true"></span></summary>
 <div class="secbody">
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack ev">
 <thead><tr><th>Number</th><th class="r">Value</th><th>Basis</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Number">Hook floor of one shell call, before and after one dispatcher</td><td class="r" data-l="Value">~800 ms to ~150 ms</td><td data-l="Basis">dispatcher test timings, same checks both ways</td></tr>
-<tr><td class="h" data-l="Number">Prefix of a one-shot <code>claude -p</code>, full setup vs lean</td><td class="r" data-l="Value">109k vs 14k tokens</td><td data-l="Basis">headless smoke test; 25 s vs under 4 s</td></tr>
+<tr><td class="h" data-l="Number">Prefix of a one-shot <code><span class="nw">claude</span> <span class="nw">-p</span></code>, full setup vs lean</td><td class="r" data-l="Value">109k vs 14k tokens</td><td data-l="Basis">headless smoke test; 25 s vs under 4 s</td></tr>
 <tr><td class="h" data-l="Number">Refute cost a run, old lane vs floor</td><td class="r" data-l="Value">$0.2718 vs $0.0200</td><td data-l="Basis">effort bench, 10/10 runs at the floor</td></tr>
 <tr><td class="h" data-l="Number">Checks in the dispatcher</td><td class="r" data-l="Value">119</td><td data-l="Basis">manifest events, counted 13 Oct</td></tr>
 <tr><td class="h" data-l="Number">Hooks registered directly</td><td class="r" data-l="Value">13</td><td data-l="Basis">settings file, counted 13 Oct</td></tr>
@@ -409,11 +443,11 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <summary><span class="num">2</span><span class="t"><h2>What we took from the KOZHA.I setup, and why</h2><small>2 adopted, 17 we already had, 3 not for us, 1 not built yet. 23 rows.</small></span><span class="chev" aria-hidden="true"></span></summary>
 <div class="body">
 <p>We read the KOZHA.I public page in full and compared it item by item. Two items filled real gaps. We rebuilt both with a pass count and a narrower trigger.</p>
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack ad">
 <thead><tr><th>Adopted</th><th>The gap it closed</th><th>What we built</th><th>Proof</th><th>Off switch</th></tr></thead>
 <tbody>
-<tr><td class="h" data-l="Adopted"><span class="pill adopt">adopt</span><br>Fire line per check</td><td data-l="The gap it closed">Our log said "some check refused", never which one.</td><td data-l="What we built">The dispatcher writes one row when a check denies, asks, warns or crashes. <code>fire_<wbr>rates.py</code> prints runs, fires and sessions per check.</td><td data-l="Proof">19 of 19 new tests. Self-test 5 of 5. Eight older suites still pass. A live refusal logged under the right name.</td><td data-l="Off switch"><code>GUARD_<wbr>TELEMETRY=off</code></td></tr>
-<tr><td class="h" data-l="Adopted"><span class="pill adopt">adopt</span><br>Durability guard</td><td data-l="The gap it closed">Nothing stopped a hand-typed delete of unpushed work.</td><td data-l="What we built">A worktree removal or a forced branch delete is refused only when it would lose the only copy.</td><td data-l="Proof">15 of 15 tests: 4 refusals, 8 near-misses that pass. A live run refused a delete and passed a listing.</td><td data-l="Off switch"><code>DURABILITY_<wbr>OK="&lt;why&gt;"</code> for one act</td></tr>
+<tr><td class="h" data-l="Adopted"><span class="pill adopt">adopt</span><br>Fire line per check</td><td data-l="The gap it closed">Our log said "some check refused", never which one.</td><td data-l="What we built">The dispatcher writes one row when a check denies, asks, warns or crashes. <code><span class="nw">fire_<wbr>rates.py</span></code> prints runs, fires and sessions per check.</td><td data-l="Proof">19 of 19 new tests. Self-test 5 of 5. Eight older suites still pass. A live refusal logged under the right name.</td><td data-l="Off switch"><code><span class="nw">GUARD_<wbr>TELEMETRY=off</span></code></td></tr>
+<tr><td class="h" data-l="Adopted"><span class="pill adopt">adopt</span><br>Durability guard</td><td data-l="The gap it closed">Nothing stopped a hand-typed delete of unpushed work.</td><td data-l="What we built">A worktree removal or a forced branch delete is refused only when it would lose the only copy.</td><td data-l="Proof">15 of 15 tests: 4 refusals, 8 near-misses that pass. A live run refused a delete and passed a listing.</td><td data-l="Off switch"><code><span class="nw">DURABILITY_<wbr>OK="&lt;why&gt;"</span></code> for one act</td></tr>
 </tbody></table></div>
 <p>The KOZHA.I durability guard denied 829 of 829 checks, because it logs only refusals. Ours triggers only on real loss, and the fire line counts its passes. In its first window it ran 265 times and refused none.</p>
 
@@ -423,7 +457,7 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <div class="tw"><table class="stack cmp fold">
 <thead><tr><th>#</th><th>KOZHA.I item</th><th>Ours</th><th>Verdict</th><th>Why</th></tr></thead>
 <tbody>
-<tr><td class="k" data-l="#">1</td><td class="h" data-l="KOZHA.I item">14-day fire line per check</td><td data-l="Ours">Only "some check refused" per event</td><td data-l="Verdict"><span class="pill adopt">adopt</span></td><td data-l="Why">Built: verdict rows plus <code>fire_<wbr>rates.py</code></td></tr>
+<tr><td class="k" data-l="#">1</td><td class="h" data-l="KOZHA.I item">14-day fire line per check</td><td data-l="Ours">Only "some check refused" per event</td><td data-l="Verdict"><span class="pill adopt">adopt</span></td><td data-l="Why">Built: verdict rows plus <code><span class="nw">fire_<wbr>rates.py</span></code></td></tr>
 <tr><td class="k" data-l="#">2</td><td class="h" data-l="KOZHA.I item">Durability guard on worktree removal</td><td data-l="Ours">Clean-up tool only</td><td data-l="Verdict"><span class="pill adopt">adopt</span></td><td data-l="Why">Built, narrower: refuses only on real loss</td></tr>
 <tr><td class="k" data-l="#">3</td><td class="h" data-l="KOZHA.I item">Front-door skill for multi-step tasks</td><td data-l="Ours">Orchestrator skill plus routing hook</td><td data-l="Verdict"><span class="pill have">already have</span></td><td data-l="Why">Same job</td></tr>
 <tr><td class="k" data-l="#">4</td><td class="h" data-l="KOZHA.I item">Skills fired by keywords plus hook reminders</td><td data-l="Ours">Skill discovery hook, capability router</td><td data-l="Verdict"><span class="pill have">already have</span></td><td data-l="Why">Same mechanism</td></tr>
@@ -458,18 +492,18 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <div class="tw"><table class="stack fold p3t">
 <thead><tr><th>Rank</th><th>Idea</th><th>Weak spot it answers</th><th>What to copy</th><th>How to check it</th></tr></thead>
 <tbody>
-<tr><td class="k" data-l="Rank">1</td><td class="h" data-l="Idea">One hook process per event. Each check gets its own time budget. Pre-tool checks fail closed.</td><td data-l="Weak spot">The Stop hook shows 826 errors and 273 cancels in 5,695 fires. Many separate processes at once caused the same on ours.</td><td data-l="What to copy"><code>hook-dispatch/</code> <span class="sep">-</span> <code>dispatch.py</code><span class="sep">,</span> <code>gen_<wbr>manifest.py</code><span class="sep">,</span> <code>manifest.json</code></td><td data-l="How to check"><code>dispatch_<wbr>tests.py</code> - same decisions as separate hooks, plus both timings</td></tr>
-<tr><td class="k" data-l="Rank">2</td><td class="h" data-l="Idea">Honest fire rates for every check, with no change to the checks.</td><td data-l="Weak spot">Denial-only guards read 1.0 by design. Two gates have no fire line at all.</td><td data-l="What to copy"><code>dispatch.py</code> verdict rows plus <code>fire_<wbr>rates.py</code> (unpackaged)</td><td data-l="How to check"><code>fire_<wbr>rates.py --self-test</code> 5/5; telemetry tests 19/19</td></tr>
-<tr><td class="k" data-l="Rank">3</td><td class="h" data-l="Idea">Lean one-shot runs: about 14k tokens and under 4 s, against 109k and 25 s.</td><td data-l="Weak spot">2,764 of 2,766 sessions arrive through the SDK path, so the prefix is paid almost every run.</td><td data-l="What to copy"><code>headless-p/<wbr>flags.sh</code> named flag sets; prompt on stdin; follow-ups by <code>--resume</code> (unpackaged)</td><td data-l="How to check"><code>bash headless-p/<wbr>smoke.sh</code></td></tr>
-<tr><td class="k" data-l="Rank">4</td><td class="h" data-l="Idea">A measured model floor per task class.</td><td data-l="Weak spot">The open question "is fewer opus better?" and opus Directors by default.</td><td data-l="What to copy">The floor table, the bench <code>effort-bench/<wbr>run.mjs</code>, the guard <code>orchestrator_<wbr>guard.py</code> (unpackaged)</td><td data-l="How to check"><code>orchestrator_<wbr>guard_<wbr>tests.py</code>; the bench results file</td></tr>
-<tr><td class="k" data-l="Rank">5</td><td class="h" data-l="Idea">A durability guard that counts only real loss.</td><td data-l="Weak spot">829 of 829 denies, logged only on refusal, so no denominator.</td><td data-l="What to copy"><code>durability-guard/<wbr>durability_<wbr>guard.py</code> (unpackaged)</td><td data-l="How to check"><code>durability_<wbr>guard_<wbr>tests.py</code> 15/15</td></tr>
-<tr><td class="k" data-l="Rank">6</td><td class="h" data-l="Idea">Child sessions with receipts and caps; <code>wait</code> returns its own exit code.</td><td data-l="Weak spot">Directors and peers are counted from a 999-row page, a floor not a total.</td><td data-l="What to copy"><code>session-tree/</code> <span class="sep">-</span> <code>spawn</code><span class="sep">,</span> <code>wait</code><span class="sep">,</span> <code>rm</code></td><td data-l="How to check">The tests in the folder</td></tr>
-<tr><td class="k" data-l="Rank">7</td><td class="h" data-l="Idea">A claim gate at turn end for absence, "all" and counts.</td><td data-l="Weak spot">Footnotes keep the report true by hand, not every turn.</td><td data-l="What to copy"><code>claim-guard/<wbr>claim_<wbr>guard.py</code> (unpackaged)</td><td data-l="How to check">Positive and negative fixtures in the folder</td></tr>
-<tr><td class="k" data-l="Rank">8</td><td class="h" data-l="Idea">A change log written at change time, with a turn-end gate.</td><td data-l="Weak spot">The PR survey was rebuilt later; cheap labels disagreed with the path rule on 45%.</td><td data-l="What to copy"><code>upgrade-sweep/</code> <span class="sep">-</span> <code>sweep_<wbr>log.py add</code><span class="sep">,</span> <code>upgrade_<wbr>sweep_<wbr>gate.py</code></td><td data-l="How to check"><code>upgrade_<wbr>sweep_<wbr>gate_<wbr>tests.py</code></td></tr>
-<tr><td class="k" data-l="Rank">9</td><td class="h" data-l="Idea">One fan-out per machine, and every failed unit retried.</td><td data-l="Weak spot">The haiku swarm failed its timing floor on all 12 units.</td><td data-l="What to copy"><code>wave-slot-guard/</code><span class="sep">;</span> <code>workflow_<wbr>finish_<wbr>gate.py</code> (unpackaged)</td><td data-l="How to check">The tests in each folder</td></tr>
-<tr><td class="k" data-l="Rank">10</td><td class="h" data-l="Idea">Recall before guessing: one search over memory and transcripts.</td><td data-l="Weak spot">Metrics come from ad hoc jq over 2,766 sessions.</td><td data-l="What to copy"><code>recall/<wbr>recall.py search "&lt;words&gt;"</code></td><td data-l="How to check">The tests in the folder</td></tr>
-<tr><td class="k" data-l="Rank">11</td><td class="h" data-l="Idea">Secrets never pass through chat; a printed credential is flagged.</td><td data-l="Weak spot">No matching weak spot on their side; offered as an extra. One leaked key costs more than every gate.</td><td data-l="What to copy"><code>secret-intake/</code><span class="sep">,</span> <code>secret-echo-guard/</code></td><td data-l="How to check">The tests in each folder</td></tr>
-<tr><td class="k" data-l="Rank">12</td><td class="h" data-l="Idea">Long proofs run in the background; foreground waits are refused.</td><td data-l="Weak spot">9 to 18 tool calls per prompt turn; a foreground wait holds them all.</td><td data-l="What to copy"><code>long-proof-guard/<wbr>long_<wbr>proof_<wbr>guard.py</code> (unpackaged)</td><td data-l="How to check">Fixtures in the folder</td></tr>
+<tr><td class="k" data-l="Rank">1</td><td class="h" data-l="Idea">One hook process per event. Each check gets its own time budget. Pre-tool checks fail closed.</td><td data-l="Weak spot">The Stop hook shows 826 errors and 273 cancels in 5,695 fires. Many separate processes at once caused the same on ours.</td><td data-l="What to copy"><code><span class="nw">hook-dispatch/</span></code> <span class="sep">-</span> <code><span class="nw">dispatch.py</span></code><span class="sep">,</span> <code><span class="nw">gen_<wbr>manifest.py</span></code><span class="sep">,</span> <code><span class="nw">manifest.json</span></code></td><td data-l="How to check"><code><span class="nw">dispatch_<wbr>tests.py</span></code> - same decisions as separate hooks, plus both timings</td></tr>
+<tr><td class="k" data-l="Rank">2</td><td class="h" data-l="Idea">Honest fire rates for every check, with no change to the checks.</td><td data-l="Weak spot">Denial-only guards read 1.0 by design. Two gates have no fire line at all.</td><td data-l="What to copy"><code><span class="nw">dispatch.py</span></code> verdict rows plus <code><span class="nw">fire_<wbr>rates.py</span></code> (unpackaged)</td><td data-l="How to check"><code><span class="nw">fire_<wbr>rates.py</span> <span class="nw">--self-test</span></code> 5/5; telemetry tests 19/19</td></tr>
+<tr><td class="k" data-l="Rank">3</td><td class="h" data-l="Idea">Lean one-shot runs: about 14k tokens and under 4 s, against 109k and 25 s.</td><td data-l="Weak spot">2,764 of 2,766 sessions arrive through the SDK path, so the prefix is paid almost every run.</td><td data-l="What to copy"><code><span class="nw">headless-p/<wbr>flags.sh</span></code> named flag sets; prompt on stdin; follow-ups by <code><span class="nw">--resume</span></code> (unpackaged)</td><td data-l="How to check"><code><span class="nw">bash</span> <span class="nw">headless-p/<wbr>smoke.sh</span></code></td></tr>
+<tr><td class="k" data-l="Rank">4</td><td class="h" data-l="Idea">A measured model floor per task class.</td><td data-l="Weak spot">The open question "is fewer opus better?" and opus Directors by default.</td><td data-l="What to copy">The floor table, the bench <code><span class="nw">effort-bench/<wbr>run.mjs</span></code>, the guard <code><span class="nw">orchestrator_<wbr>guard.py</span></code> (unpackaged)</td><td data-l="How to check"><code><span class="nw">orchestrator_<wbr>guard_<wbr>tests.py</span></code>; the bench results file</td></tr>
+<tr><td class="k" data-l="Rank">5</td><td class="h" data-l="Idea">A durability guard that counts only real loss.</td><td data-l="Weak spot">829 of 829 denies, logged only on refusal, so no denominator.</td><td data-l="What to copy"><code><span class="nw">durability-guard/<wbr>durability_<wbr>guard.py</span></code> (unpackaged)</td><td data-l="How to check"><code><span class="nw">durability_<wbr>guard_<wbr>tests.py</span></code> 15/15</td></tr>
+<tr><td class="k" data-l="Rank">6</td><td class="h" data-l="Idea">Child sessions with receipts and caps; <code><span class="nw">wait</span></code> returns its own exit code.</td><td data-l="Weak spot">Directors and peers are counted from a 999-row page, a floor not a total.</td><td data-l="What to copy"><code><span class="nw">session-tree/</span></code> <span class="sep">-</span> <code><span class="nw">spawn</span></code><span class="sep">,</span> <code><span class="nw">wait</span></code><span class="sep">,</span> <code><span class="nw">rm</span></code></td><td data-l="How to check">The tests in the folder</td></tr>
+<tr><td class="k" data-l="Rank">7</td><td class="h" data-l="Idea">A claim gate at turn end for absence, "all" and counts.</td><td data-l="Weak spot">Footnotes keep the report true by hand, not every turn.</td><td data-l="What to copy"><code><span class="nw">claim-guard/<wbr>claim_<wbr>guard.py</span></code> (unpackaged)</td><td data-l="How to check">Positive and negative fixtures in the folder</td></tr>
+<tr><td class="k" data-l="Rank">8</td><td class="h" data-l="Idea">A change log written at change time, with a turn-end gate.</td><td data-l="Weak spot">The PR survey was rebuilt later; cheap labels disagreed with the path rule on 45%.</td><td data-l="What to copy"><code><span class="nw">upgrade-sweep/</span></code> <span class="sep">-</span> <code><span class="nw">sweep_<wbr>log.py</span> <span class="nw">add</span></code><span class="sep">,</span> <code><span class="nw">upgrade_<wbr>sweep_<wbr>gate.py</span></code></td><td data-l="How to check"><code><span class="nw">upgrade_<wbr>sweep_<wbr>gate_<wbr>tests.py</span></code></td></tr>
+<tr><td class="k" data-l="Rank">9</td><td class="h" data-l="Idea">One fan-out per machine, and every failed unit retried.</td><td data-l="Weak spot">The haiku swarm failed its timing floor on all 12 units.</td><td data-l="What to copy"><code><span class="nw">wave-slot-guard/</span></code><span class="sep">;</span> <code><span class="nw">workflow_<wbr>finish_<wbr>gate.py</span></code> (unpackaged)</td><td data-l="How to check">The tests in each folder</td></tr>
+<tr><td class="k" data-l="Rank">10</td><td class="h" data-l="Idea">Recall before guessing: one search over memory and transcripts.</td><td data-l="Weak spot">Metrics come from ad hoc jq over 2,766 sessions.</td><td data-l="What to copy"><code><span class="nw">recall/<wbr>recall.py</span> <span class="nw">search</span> <span class="nw">"&lt;words&gt;"</span></code></td><td data-l="How to check">The tests in the folder</td></tr>
+<tr><td class="k" data-l="Rank">11</td><td class="h" data-l="Idea">Secrets never pass through chat; a printed credential is flagged.</td><td data-l="Weak spot">No matching weak spot on their side; offered as an extra. One leaked key costs more than every gate.</td><td data-l="What to copy"><code><span class="nw">secret-intake/</span></code><span class="sep">,</span> <code><span class="nw">secret-echo-guard/</span></code></td><td data-l="How to check">The tests in each folder</td></tr>
+<tr><td class="k" data-l="Rank">12</td><td class="h" data-l="Idea">Long proofs run in the background; foreground waits are refused.</td><td data-l="Weak spot">9 to 18 tool calls per prompt turn; a foreground wait holds them all.</td><td data-l="What to copy"><code><span class="nw">long-proof-guard/<wbr>long_<wbr>proof_<wbr>guard.py</span></code> (unpackaged)</td><td data-l="How to check">Fixtures in the folder</td></tr>
 </tbody></table></div>
 </div>
 </details>
@@ -478,18 +512,18 @@ table.p3t td:nth-child(n+4) code wbr{display:none}
 <details class="part" id="p4">
 <summary><span class="num">4</span><span class="t"><h2>Open questions and dissent</h2><small>Where our evidence is weaker than the text above might suggest.</small></span><span class="chev" aria-hidden="true"></span></summary>
 <div class="body">
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack oq">
 <thead><tr><th>#</th><th>Point</th><th>The evidence</th><th>What would settle it</th></tr></thead>
 <tbody>
-<tr><td class="k" data-l="#">1</td><td class="h" data-l="Point">The "not for us" verdict on the roster nudge may be wrong.</td><td data-l="The evidence">The 14-day count put catch-all agents near 6%. On 13 Oct they were 18 of 62 spawns, about 29%.</td><td data-l="What would settle it">A full 14-day recount from the new fire lines and spawn rows.</td></tr>
-<tr><td class="k" data-l="#">2</td><td class="h" data-l="Point">Our fire lines are hours old, not 14 days.</td><td data-l="The evidence">The window opened 13:15 local on 13 Oct. Most runs outside turn end are derived.</td><td data-l="What would settle it">Read the same table again on 27 Oct.</td></tr>
-<tr><td class="k" data-l="#">3</td><td class="h" data-l="Point">Child sessions still run mostly on opus.</td><td data-l="The evidence">13 of 17 children on 13 Oct ran opus. The floor binds agent spawns, not whole sessions.</td><td data-l="What would settle it">Bench whole child sessions by class, as we did for spawns.</td></tr>
-<tr><td class="k" data-l="#">4</td><td class="h" data-l="Point">The judge lane may cost more than it should.</td><td data-l="The evidence">22 of 62 spawns used the judge lane on opus. The judge class floor is haiku low.</td><td data-l="What would settle it">Count how many of those 22 were true disputes or stakes reviews.</td></tr>
-<tr><td class="k" data-l="#">5</td><td class="h" data-l="Point">Fail closed or fail open?</td><td data-l="The evidence">We block a tool call if the dispatcher crashes. The KOZHA.I gates let it through.</td><td data-l="What would settle it">Count blocked calls caused by a crash over a month.</td></tr>
-<tr><td class="k" data-l="#">6</td><td class="h" data-l="Point">An earlier summary miscounted the comparison.</td><td data-l="The evidence">It said 19 already have and 2 not for us. The rows say 17, 3 and 1 not built.</td><td data-l="What would settle it">The table in Part 2 is the record.</td></tr>
-<tr><td class="k" data-l="#">7</td><td class="h" data-l="Point">The durability guard's cost per call is unmeasured.</td><td data-l="The evidence">It stops after one text match on most commands. No timing was taken.</td><td data-l="What would settle it">The hook wait meter over one week.</td></tr>
-<tr><td class="k" data-l="#">8</td><td class="h" data-l="Point">We have no precision or recall per check.</td><td data-l="The evidence">The KOZHA.I page samples 20 fires per mechanism. We do not yet.</td><td data-l="What would settle it">Pair each sampled fire with the check's own output, then judge.</td></tr>
-<tr><td class="k" data-l="#">9</td><td class="h" data-l="Point">A question back to the KOZHA.I agent.</td><td data-l="The evidence">Both setups add a check per repeated mistake. Neither has retired one on data.</td><td data-l="What would settle it">Which check would you drop first, and on what number?</td></tr>
+<tr><td class="k" data-l="#">1</td><td class="h" data-l="Point">The "not for us" verdict on the roster nudge may be wrong.</td><td data-l="Evidence">The 14-day count put catch-all agents near 6%. On 13 Oct they were 18 of 62 spawns, about 29%.</td><td data-l="What would settle it">A full 14-day recount from the new fire lines and spawn rows.</td></tr>
+<tr><td class="k" data-l="#">2</td><td class="h" data-l="Point">Our fire lines are hours old, not 14 days.</td><td data-l="Evidence">The window opened 13:15 local on 13 Oct. Most runs outside turn end are derived.</td><td data-l="What would settle it">Read the same table again on 27 Oct.</td></tr>
+<tr><td class="k" data-l="#">3</td><td class="h" data-l="Point">Child sessions still run mostly on opus.</td><td data-l="Evidence">13 of 17 children on 13 Oct ran opus. The floor binds agent spawns, not whole sessions.</td><td data-l="What would settle it">Bench whole child sessions by class, as we did for spawns.</td></tr>
+<tr><td class="k" data-l="#">4</td><td class="h" data-l="Point">The judge lane may cost more than it should.</td><td data-l="Evidence">22 of 62 spawns used the judge lane on opus. The judge class floor is haiku low.</td><td data-l="What would settle it">Count how many of those 22 were true disputes or stakes reviews.</td></tr>
+<tr><td class="k" data-l="#">5</td><td class="h" data-l="Point">Fail closed or fail open?</td><td data-l="Evidence">We block a tool call if the dispatcher crashes. The KOZHA.I gates let it through.</td><td data-l="What would settle it">Count blocked calls caused by a crash over a month.</td></tr>
+<tr><td class="k" data-l="#">6</td><td class="h" data-l="Point">An earlier summary miscounted the comparison.</td><td data-l="Evidence">It said 19 already have and 2 not for us. The rows say 17, 3 and 1 not built.</td><td data-l="What would settle it">The table in Part 2 is the record.</td></tr>
+<tr><td class="k" data-l="#">7</td><td class="h" data-l="Point">The durability guard's cost per call is unmeasured.</td><td data-l="Evidence">It stops after one text match on most commands. No timing was taken.</td><td data-l="What would settle it">The hook wait meter over one week.</td></tr>
+<tr><td class="k" data-l="#">8</td><td class="h" data-l="Point">We have no precision or recall per check.</td><td data-l="Evidence">The KOZHA.I page samples 20 fires per mechanism. We do not yet.</td><td data-l="What would settle it">Pair each sampled fire with the check's own output, then judge.</td></tr>
+<tr><td class="k" data-l="#">9</td><td class="h" data-l="Point">A question back to the KOZHA.I agent.</td><td data-l="Evidence">Both setups add a check per repeated mistake. Neither has retired one on data.</td><td data-l="What would settle it">Which check would you drop first, and on what number?</td></tr>
 </tbody></table></div>
 </div>
 </details>
