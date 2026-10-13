@@ -50,7 +50,7 @@ details.part>summary::-webkit-details-marker,details.sec>summary::-webkit-detail
 details.part>summary .num{color:var(--accent);font-weight:700;font-size:15px;min-width:1.4em}
 details.part>summary .t{flex:1;min-width:0}
 details.part>summary .t small{display:block;color:var(--muted);font-size:14px;font-weight:400;margin-top:2px}
-summary .chev{color:var(--accent);font-size:20px;line-height:1;transition:transform .2s ease;flex:none}
+summary .chev{color:var(--accent);font-size:13px;line-height:1;transition:transform .2s ease;flex:none;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--bg);align-self:center}
 details[open]>summary .chev{transform:rotate(90deg)}
 summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:12px}
 .body{padding:0 20px 18px}
@@ -94,6 +94,10 @@ footer{color:var(--muted);font-size:13px;margin-top:26px}
 <style media="(prefers-reduced-motion: reduce)">
 summary .chev{transition:none}
 </style>
+<style media="(min-width:641px)">
+td code{white-space:nowrap}
+td code wbr{display:none}
+</style>
 <style media="(max-width:980px)">
 .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.map{grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}
 </style>
@@ -128,7 +132,7 @@ summary .chev{transition:none}
   .tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
   .tile{padding:8px 9px}
   .tile .n{font-size:19px}
-  .tile .l{font-size:11.5px;line-height:1.3}
+  .tile .l{font-size:12px;line-height:1.3}
   .answer{padding:12px 14px}
   .lede{font-size:15px}
 </style>
@@ -326,8 +330,8 @@ summary .chev{transition:none}
 <div class="tw"><table class="stack">
 <thead><tr><th>Adopted</th><th>The gap it closed</th><th>What we built</th><th>Proof</th><th>Off switch</th></tr></thead>
 <tbody>
-<tr><td class="h" data-l="Adopted"><span class="pill adopt">adopt</span> Fire line per check</td><td data-l="The gap it closed">Our log said "some check refused", never which one.</td><td data-l="What we built">The dispatcher writes one row when a check denies, asks, warns or crashes. <code>fire_<wbr>rates.py</code> prints runs, fires and sessions per check.</td><td data-l="Proof">19 of 19 new tests. Self-test 5 of 5. Eight older suites still pass. A live refusal logged under the right name.</td><td data-l="Off switch"><code>GUARD_<wbr>TELEMETRY=off</code></td></tr>
-<tr><td class="h" data-l="Adopted"><span class="pill adopt">adopt</span> Durability guard</td><td data-l="The gap it closed">Nothing stopped a hand-typed delete of unpushed work.</td><td data-l="What we built">A worktree removal or a forced branch delete is refused only when it would lose the only copy.</td><td data-l="Proof">15 of 15 tests: 4 refusals, 8 near-misses that pass. A live run refused a delete and passed a listing.</td><td data-l="Off switch"><code>DURABILITY_<wbr>OK="&lt;why&gt;"</code> for one act</td></tr>
+<tr><td class="h" data-l="Adopted"><span class="pill adopt">adopt</span><br>Fire line per check</td><td data-l="The gap it closed">Our log said "some check refused", never which one.</td><td data-l="What we built">The dispatcher writes one row when a check denies, asks, warns or crashes. <code>fire_<wbr>rates.py</code> prints runs, fires and sessions per check.</td><td data-l="Proof">19 of 19 new tests. Self-test 5 of 5. Eight older suites still pass. A live refusal logged under the right name.</td><td data-l="Off switch"><code>GUARD_<wbr>TELEMETRY=off</code></td></tr>
+<tr><td class="h" data-l="Adopted"><span class="pill adopt">adopt</span><br>Durability guard</td><td data-l="The gap it closed">Nothing stopped a hand-typed delete of unpushed work.</td><td data-l="What we built">A worktree removal or a forced branch delete is refused only when it would lose the only copy.</td><td data-l="Proof">15 of 15 tests: 4 refusals, 8 near-misses that pass. A live run refused a delete and passed a listing.</td><td data-l="Off switch"><code>DURABILITY_<wbr>OK="&lt;why&gt;"</code> for one act</td></tr>
 </tbody></table></div>
 <p>The KOZHA.I durability guard denied 829 of 829 checks, because it logs only refusals. Ours triggers only on real loss, and the fire line counts its passes. In its first window it ran 265 times and refused none.</p>
 
@@ -371,14 +375,14 @@ summary .chev{transition:none}
 <div class="tw"><table class="stack">
 <thead><tr><th>Rank</th><th>Idea</th><th>Weak spot it answers</th><th>What to copy</th><th>How to check it</th></tr></thead>
 <tbody>
-<tr><td class="k" data-l="Rank">1</td><td class="h" data-l="Idea">One hook process per event. Each check gets its own time budget. Pre-tool checks fail closed.</td><td data-l="Weak spot">The Stop hook shows 826 errors and 273 cancels in 5,695 fires. Many separate processes at once caused the same on ours.</td><td data-l="What to copy"><code>hook-dispatch/</code>: <code>dispatch.py</code>, <code>gen_<wbr>manifest.py</code>, <code>manifest.json</code></td><td data-l="How to check"><code>dispatch_<wbr>tests.py</code>: same decisions as separate hooks, plus both timings</td></tr>
+<tr><td class="k" data-l="Rank">1</td><td class="h" data-l="Idea">One hook process per event. Each check gets its own time budget. Pre-tool checks fail closed.</td><td data-l="Weak spot">The Stop hook shows 826 errors and 273 cancels in 5,695 fires. Many separate processes at once caused the same on ours.</td><td data-l="What to copy"><code>hook-dispatch/</code> - <code>dispatch.py</code>, <code>gen_<wbr>manifest.py</code>, <code>manifest.json</code></td><td data-l="How to check"><code>dispatch_<wbr>tests.py</code> - same decisions as separate hooks, plus both timings</td></tr>
 <tr><td class="k" data-l="Rank">2</td><td class="h" data-l="Idea">Honest fire rates for every check, with no change to the checks.</td><td data-l="Weak spot">Denial-only guards read 1.0 by design. Two gates have no fire line at all.</td><td data-l="What to copy"><code>dispatch.py</code> verdict rows plus <code>fire_<wbr>rates.py</code> (unpackaged)</td><td data-l="How to check"><code>fire_<wbr>rates.py --self-test</code> 5/5; telemetry tests 19/19</td></tr>
 <tr><td class="k" data-l="Rank">3</td><td class="h" data-l="Idea">Lean one-shot runs: about 14k tokens and under 4 s, against 109k and 25 s.</td><td data-l="Weak spot">2,764 of 2,766 sessions arrive through the SDK path, so the prefix is paid almost every run.</td><td data-l="What to copy"><code>headless-p/<wbr>flags.sh</code> named flag sets; prompt on stdin; follow-ups by <code>--resume</code> (unpackaged)</td><td data-l="How to check"><code>bash headless-p/<wbr>smoke.sh</code></td></tr>
 <tr><td class="k" data-l="Rank">4</td><td class="h" data-l="Idea">A measured model floor per task class.</td><td data-l="Weak spot">The open question "is fewer opus better?" and opus Directors by default.</td><td data-l="What to copy">The floor table, the bench <code>effort-bench/<wbr>run.mjs</code>, the guard <code>orchestrator_<wbr>guard.py</code> (unpackaged)</td><td data-l="How to check"><code>orchestrator_<wbr>guard_<wbr>tests.py</code>; the bench results file</td></tr>
 <tr><td class="k" data-l="Rank">5</td><td class="h" data-l="Idea">A durability guard that counts only real loss.</td><td data-l="Weak spot">829 of 829 denies, logged only on refusal, so no denominator.</td><td data-l="What to copy"><code>durability-guard/<wbr>durability_<wbr>guard.py</code> (unpackaged)</td><td data-l="How to check"><code>durability_<wbr>guard_<wbr>tests.py</code> 15/15</td></tr>
-<tr><td class="k" data-l="Rank">6</td><td class="h" data-l="Idea">Child sessions with receipts and caps; <code>wait</code> returns its own exit code.</td><td data-l="Weak spot">Directors and peers are counted from a 999-row page, a floor not a total.</td><td data-l="What to copy"><code>session-tree/</code>: <code>spawn</code>, <code>wait</code>, <code>rm</code></td><td data-l="How to check">The tests in the folder</td></tr>
+<tr><td class="k" data-l="Rank">6</td><td class="h" data-l="Idea">Child sessions with receipts and caps; <code>wait</code> returns its own exit code.</td><td data-l="Weak spot">Directors and peers are counted from a 999-row page, a floor not a total.</td><td data-l="What to copy"><code>session-tree/</code> - <code>spawn</code>, <code>wait</code>, <code>rm</code></td><td data-l="How to check">The tests in the folder</td></tr>
 <tr><td class="k" data-l="Rank">7</td><td class="h" data-l="Idea">A claim gate at turn end for absence, "all" and counts.</td><td data-l="Weak spot">Footnotes keep the report true by hand, not every turn.</td><td data-l="What to copy"><code>claim-guard/<wbr>claim_<wbr>guard.py</code> (unpackaged)</td><td data-l="How to check">Positive and negative fixtures in the folder</td></tr>
-<tr><td class="k" data-l="Rank">8</td><td class="h" data-l="Idea">A change log written at change time, with a turn-end gate.</td><td data-l="Weak spot">The PR survey was rebuilt later; cheap labels disagreed with the path rule on 45%.</td><td data-l="What to copy"><code>upgrade-sweep/</code>: <code>sweep_<wbr>log.py add</code>, <code>upgrade_<wbr>sweep_<wbr>gate.py</code></td><td data-l="How to check"><code>upgrade_<wbr>sweep_<wbr>gate_<wbr>tests.py</code></td></tr>
+<tr><td class="k" data-l="Rank">8</td><td class="h" data-l="Idea">A change log written at change time, with a turn-end gate.</td><td data-l="Weak spot">The PR survey was rebuilt later; cheap labels disagreed with the path rule on 45%.</td><td data-l="What to copy"><code>upgrade-sweep/</code> - <code>sweep_<wbr>log.py add</code>, <code>upgrade_<wbr>sweep_<wbr>gate.py</code></td><td data-l="How to check"><code>upgrade_<wbr>sweep_<wbr>gate_<wbr>tests.py</code></td></tr>
 <tr><td class="k" data-l="Rank">9</td><td class="h" data-l="Idea">One fan-out per machine, and every failed unit retried.</td><td data-l="Weak spot">The haiku swarm failed its timing floor on all 12 units.</td><td data-l="What to copy"><code>wave-slot-guard/</code>; <code>workflow_<wbr>finish_<wbr>gate.py</code> (unpackaged)</td><td data-l="How to check">The tests in each folder</td></tr>
 <tr><td class="k" data-l="Rank">10</td><td class="h" data-l="Idea">Recall before guessing: one search over memory and transcripts.</td><td data-l="Weak spot">Metrics come from ad hoc jq over 2,766 sessions.</td><td data-l="What to copy"><code>recall/<wbr>recall.py search "&lt;words&gt;"</code></td><td data-l="How to check">The tests in the folder</td></tr>
 <tr><td class="k" data-l="Rank">11</td><td class="h" data-l="Idea">Secrets never pass through chat; a printed credential is flagged.</td><td data-l="Weak spot">Not shown on the page. One leaked key costs more than every gate.</td><td data-l="What to copy"><code>secret-intake/</code>, <code>secret-echo-guard/</code></td><td data-l="How to check">The tests in each folder</td></tr>
