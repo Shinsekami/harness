@@ -146,6 +146,10 @@ td code wbr{display:none}
   .tile{padding:8px 9px}
   .tile .n{font-size:19px}
   .tile .l{font-size:12px;line-height:1.3}
+  table.stack tbody tr:not(:first-child) td::before{display:none}
+  table.duo tbody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  table.duo tbody tr{margin:0}
+  summary .chev{width:36px;height:36px;font-size:26px;border:2px solid var(--accent);background:var(--accent-soft)}
   .answer{padding:12px 14px}
   .lede{font-size:15px}
 </style>
@@ -208,7 +212,7 @@ td code wbr{display:none}
 <p>Claude Code can start one process per hook. We had about 30 starting at once on every call. Now one dispatcher process runs every check of an event. Each check has its own time budget. A hung check decides nothing, and the rest still run.</p>
 <p>If the dispatcher itself crashes before a tool call, the call is blocked. A check is added in one manifest file, then tested both ways.</p>
 <div class="two">
-<div class="tw" style="margin-top:0"><table class="stack">
+<div class="tw" style="margin-top:0"><table class="stack duo">
 <thead><tr><th>Hook event</th><th class="r">Checks</th><th class="r">Deadline</th><th>Typical job</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Hook event">Before a tool call</td><td class="r" data-l="Checks">62</td><td class="r" data-l="Deadline">90 s</td><td data-l="Typical job">Refuse a risky command or edit</td></tr>
@@ -224,7 +228,7 @@ td code wbr{display:none}
 </div>
 <h3 style="margin-top:6px">Fire lines, first window</h3>
 <p>Each check now logs when it refuses or warns. The window opened at 13:15 local time on 13 Oct. At build time it held 883 hook events across 108 checks. Fire means deny, ask or advise. The busiest checks:</p>
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack duo">
 <thead><tr><th>Check</th><th>Event</th><th class="r">Runs</th><th class="r">Deny</th><th class="r">Advise</th><th class="r">Fire rate</th><th class="r">Sessions</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Check">shell guard (wrong shell syntax)</td><td class="s" data-l="Event">before tool</td><td class="r" data-l="Runs">265</td><td class="r" data-l="Deny">7</td><td class="r" data-l="Advise">0</td><td class="r" data-l="Fire rate">0.026</td><td class="r" data-l="Sessions">5</td></tr>
@@ -299,7 +303,7 @@ td code wbr{display:none}
 <tr><td class="h" data-l="Time (local)">13:15</td><td data-l="What happened">Per-check fire lines start recording.</td><td data-l="Which tool carried it">hook dispatcher</td></tr>
 <tr><td class="h" data-l="Time (local)">13:34</td><td data-l="What happened">This page is briefed and built, then checked by another model family.</td><td data-l="Which tool carried it">public audit, leak guard, second opinion</td></tr>
 </tbody></table></div>
-<div class="tw"><table class="stack">
+<div class="tw"><table class="stack duo">
 <thead><tr><th>Measure, 13 Oct to about 12:00 UTC</th><th class="r">Value</th><th>Basis</th></tr></thead>
 <tbody>
 <tr><td class="h" data-l="Measure">Main sessions active</td><td class="r" data-l="Value">29</td><td data-l="Basis">transcripts with a row stamped 13 Oct</td></tr>
