@@ -93,7 +93,7 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 14 days, all transcripts: 6,031 refusals; next call near-identical 1,193 (20 percent), next call carrying an override or background flag 180.
 
 ### 3.4 Pool and credit
-Seats: the agent seat  (setup token, scope inference-only, expires about a year out), seat A, seat E, ivo.petrovic, marketing, seat B, seat D (all /login, refresh tokens, access expiring 2026-10-21). Cloud credit: seat C (the credit payer) $8.79 of $250 left, the owner seat  $1.37 of $250, both expire 2026-11-05 08:59; the 20-Oct health report had $437 of $500 and a spend of $45 per 24 h against a $14.9 pace [REPORT, BB Tools Health 10-06].
+Seats: the agent seat  (setup token, scope inference-only, expires about a year out), seat A, seat E, the owner seat, marketing, seat B, seat D (all /login, refresh tokens, access expiring 2026-10-21). Cloud credit: seat C (the credit payer) $8.79 of $250 left, the owner seat  $1.37 of $250, both expire 2026-11-05 08:59; the 20-Oct health report had $437 of $500 and a spend of $45 per 24 h against a $14.9 pace [REPORT, BB Tools Health 10-06].
 
 ## 4. Meta-patterns: 7,266 lessons in 18 roots [MEASURED]
 
@@ -294,7 +294,7 @@ Facts from https://code.claude.com/docs/en/authentication.md, cli-reference.md, 
 What the pool already has [MEASURED, ClaudePool.psm1]: `Add-ClaudeTokenAccount` (a setup-token seat, source 'setup-token', expiry +365 days, no refresh token, read interactively so it never lands in shell history), `Test-SetupTokenAccount` (the watcher never overwrites its snapshot), a usage reader that falls back to rate-limit headers when /usage answers 403 for an inference-only token, and one live example: the agent seat, scope inference-only, valid to about a year out. The six other seats are /login seats whose access tokens expire daily and whose refresh is the source of the revoke-on-refresh incidents (P06, 201 lessons; the ⛔ law of 15 Sep).
 
 Transition, in order [INFERENCE]:
-1. Ivo mints one setup token per rotating seat: seat A, seat B, marketing, seat D, seat E (5 browser approvals, about ten minutes). ivo.petrovic stays on /login: it carries Remote Control and the claude.ai connectors (Claude Docs, Searchable), which a setup token cannot reach.
+1. Ivo mints one setup token per rotating seat: seat A, seat B, marketing, seat D, seat E (5 browser approvals, about ten minutes). the owner seat stays on /login: it carries Remote Control and the claude.ai connectors (Claude Docs, Searchable), which a setup token cannot reach.
 2. Each token goes in through `Add-ClaudeTokenAccount -FromFile` (never pasted into a shell line); the file is deleted after import.
 3. The launcher and session_tree pass `CLAUDE_CODE_OAUTH_TOKEN` per child from the chosen seat instead of the custom bearer header; the rotator's refresh watcher, the T-90-minute renewal and the `.oauth_refresh.lock` path are skipped for source 'setup-token' seats (the code paths exist; a test proves each).
 4. Proof before cutover: a child session on a setup-token seat makes a model call; its 5-hour and 7-day usage reads from the headers; Remote Control still starts on the /login seat; a claude.ai connector call still works on the /login seat; a cloud-router child still runs.
@@ -372,7 +372,7 @@ Covered since the first draft: the official pages of the 14 outside alternatives
 
 Blocked on Ivo (each with the recommendation, and what happens on each answer):
 1. Approve the plan and the stage order. Recommended: yes, S0 and S1 this week. On yes: the Orchestrator opens one session per stage with this plan as the brief. On no: name the stage to change.
-2. Setup tokens: mint 5 (seat A, seat B, marketing, seat D, seat E), keep ivo.petrovic on /login. Recommended: yes, this week; the token type does not change the policy exposure, and the daily refresh is what breaks. On yes: the five browser approvals are his; the import and the pool change are ours with the proofs of section 8 step 4. On no: the refresh machinery stays and P06 keeps its 201 lessons.
+2. Setup tokens: mint 5 (seat A, seat B, marketing, seat D, seat E), keep the owner seat on /login. Recommended: yes, this week; the token type does not change the policy exposure, and the daily refresh is what breaks. On yes: the five browser approvals are his; the import and the pool change are ours with the proofs of section 8 step 4. On no: the refresh machinery stays and P06 keeps its 201 lessons.
 3. Gate lifecycle: let the loop demote any gate whose labelled precision falls under 95 percent to shadow without asking, except consent, money, send, credential and seal gates; an override rate above 5 percent queues the gate's denies for labelling and never demotes by itself (re-keyed after round 1 with a colleague's agent, 21 Oct). Recommended: yes.
 4. Prefix: move the pool and seat bullets (about 20) and the comms detail out of L0 into L1 files, with the measured no-loss test. Recommended: yes.
 5. The headline metric for "doubled": verified-done rows per attention hour, with corrections per 100 prompts beside it. Recommended: yes, baseline for two weeks first.
