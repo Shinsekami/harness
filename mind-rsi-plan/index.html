@@ -29,7 +29,7 @@ a{color:var(--accent)}.toc{font-size:14px;columns:2;column-gap:2em}.toc ul{paddi
 <p>Published 21 Oct 2026 for review by a colleague's agent. Numbers are as of that day. Seat names and machine paths are replaced by roles; nothing else is changed from the working file. Raw markdown: <a href="mind-rsi-plan.md">mind-rsi-plan.md</a>.</p>
 </blockquote>
 <h1 id="mind-rsi-plan">Mind - RSI plan</h1>
-<p>Plan for rebuilding how Claude Code is run here, written 21 October 2026 by the Mind session (b4080110). Research and planning only. Nothing in the harness was changed except two codified orders Ivo gave during the run (section 13).</p>
+<p>Plan for rebuilding how Claude Code is run here, written 21 October 2026 by the Mind session. Research and planning only. Nothing in the harness was changed except two codified orders Ivo gave during the run (section 13).</p>
 <p>Mode labels on every claim: [MEASURED] a number this session computed from logs or transcripts; [READ] a quote from a fetched primary page, URL given; [REPORT] taken from one of our own earlier reports, named; [INFERENCE] our reading of measured facts, a design choice until its stage measures it; [SIMULATED] a hypothesis from the simulated expert pass, never evidence; [NOT DOCUMENTED] looked for and not found.</p>
 <h2 id="0-the-answer">0. The answer</h2>
 <p>The harness does its job, but it grew by stacking. It has 213 tool folders, 134 gate scripts registered 154 times across four hook events plus 17 direct hooks, 162 always-on law bullets and 2,147 memory notes, and no step that ever removes anything [MEASURED]. The bill is measurable. In the last 7 days hooks held sessions for 68 hours, half of it one repo gate that timed out on 3,032 of its 3,033 runs and so never judged anything [MEASURED]. Every turn starts with about 137 thousand tokens of prefix before any work [MEASURED]. A third of everything the model emits is a read-only inspection call that a script could have made, and 6,031 gate refusals in 14 days each cost a whole turn [MEASURED]. 15 percent of all recorded lessons are about the gates themselves, false refusals or missing ones [MEASURED].</p>
@@ -41,10 +41,10 @@ a{color:var(--accent)}.toc{font-size:14px;columns:2;column-gap:2em}.toc ul{paddi
 <li>De-agent the clock, the ceremonies and the shell-fix loop: 1,504 identical date calls, 8,515 bookkeeping turns and 2,711 shell-syntax refusals in 14 days become hook-injected facts, one close command and a PreToolUse rewrite [MEASURED, section 7].</li>
 <li>Split the prefix into layers: L0 under 12 thousand characters, area rules loaded by path, per-prompt injections sent only when they change [INFERENCE on the measured 136,561-token first request].</li>
 <li>One ledger (SQLite, write-ahead log, fsync) replaces the eight state stores that today answer "what is open and who waits on whom" [MEASURED inventory, section 6].</li>
-<li>A gate lifecycle: shadow for 7 days or 50 would-deny events, at least 95 percent precision, p90 under 50 ms, automatic demotion above a 5 percent override rate, retirement after 30 days of zero true denies [SIMULATED H3, adopted as the design; numbers are starting values to be measured].</li>
+<li>A gate lifecycle: shadow for 7 days or 50 would-deny events, at least 95 percent labelled precision, p90 under 50 ms, demotion to shadow when the labelled precision falls under the floor, retirement after 30 days of zero true denies [SIMULATED H3, adopted as the design; numbers are starting values to be measured]. The override rate is a review signal, never the demotion key: overrides partly measure agent impatience, so keying on them demotes the most-bypassed gates first (round 1 with a colleague's agent, section 14).</li>
 <li>The codify loop becomes automatic: detect from transcripts, cluster into the 18 patterns, name the generator, land on the lowest rung (fix the generator, change the interface, add a test, add advice, deny last, a prose law only for judgment no code can hold).</li>
 <li>Setup tokens for the five rotating seats; the owner seat stays on /login for Remote Control and claude.ai connectors [READ, section 8].</li>
-<li>Spawns at their floor by construction: 429 visual-judge spawns in 14 days ran at the parent's model [MEASURED]; the effort and model become part of the lane file, not the prompt.</li>
+<li>Spawns at their floor by construction: 429 visual-judge spawns in 14 days ran at the parent's model [MEASURED]; the effort and model become part of the lane file, not the prompt, and the spawn guard pins an unpinned generic spawn in code (<code>updatedInput</code>) instead of refusing it, one turn saved per spawn (round 1, section 14).</li>
 <li>A standard helper library instead of per-session scratch scripts: story.json written 52 times, judge rubrics about 90 times, memory-trim and pointer scripts rewritten in 20 sessions [MEASURED].</li>
 <li>The teacher becomes the proposal engine of the loop and applies generator fixes behind tests itself; today the teacher made 23 proposals and 5 were acted on [REPORT, Harness Writer 10-15].</li>
 </ol>
@@ -295,7 +295,7 @@ a{color:var(--accent)}.toc{font-size:14px;columns:2;column-gap:2em}.toc ul{paddi
 <p>Last 24 hours, after Hook Speed One to Four: Stop median 1.2 s p90 3.2 s, PreToolUse 0.4 s p90 2.2 s, UserPromptSubmit 0.5 s p90 1.9 s, SessionStart 2.4 s p90 7.6 s; 62.9 min of hook wait in the day; still 9 of 16 tcs hook_dispatch.sh runs killed at 44 s. The ratchet at 04:15 shows every judged event over its ceiling (Stop median 1,334 vs 1,100 ms, Stop p90 3,738 vs 1,500, PreToolUse p90 3,112 vs 800, SessionStart p90 8,906 vs 4,500).</p>
 <p>The docs say hooks of one event run in parallel and a timed-out hook's output is discarded [READ, https://code.claude.com/docs/en/hooks.md: "When an event fires, Claude Code runs the matching hooks in parallel"; "Claude Code cancels a command, http, or mcp_tool hook that reaches its timeout, discarding the hook's output"]. Our one-process dispatcher ran its 40 Stop gates as one serial chain until Hook Speed Three added four parallel lanes [REPORT, Hook Speed Three, 21 Oct].</p>
 <h3 id="32-tokens-and-the-prefix">3.2 Tokens and the prefix</h3>
-<p>This session's first request: 136,561 input tokens (system prompt 18,859 chars, 28 tool schemas 112,361 chars, then both CLAUDE.md files, MEMORY.md, the skill listing, agent list, MCP instructions and first-prompt injections). Context per call averaged 277,640 tokens, 57 cache-read tokens per output token. Fleet, 24 hours: 19,154 calls, 5,218 million tokens, of which 4,988 million cache reads. Fleet, 7 days: 83,448 calls, 26,066 million tokens. Cache busts on 20 Oct: 153 busts rewrote 42.67 million tokens (seat rotation 58 busts = 20.86 million; after compaction 74; gap over 60 min 18; unexplained 1 = 301,920). Docs: a 1-hour cache write costs 2x, a read 0.1x; changing effort invalidates cached blocks [READ, https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md].</p>
+<p>This session's first request: 136,561 input tokens (system prompt 18,859 chars, 28 tool schemas 112,361 chars, then both CLAUDE.md files, MEMORY.md, the skill listing, agent list, MCP instructions and first-prompt injections). Context per call averaged 277,640 tokens, 57 cache-read tokens per output token. Fleet, 24 hours: 19,154 calls, 5,218 million tokens, of which 4,988 million cache reads. Fleet, 7 days: 83,448 calls, 26,066 million tokens. Cache busts on 20 Oct: 153 busts rewrote 42.67 million tokens (seat rotation 58 busts = 20.86 million; after compaction 74; gap over 60 min 18; unexplained 1 = 301,920). Docs: a 1-hour cache write costs 2x, a read 0.1x; changing effort invalidates cached blocks [READ, https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md]. The 136,561 figure is one session's first request with its toolset; before it becomes a fleet target, S0 measures the spread by toolset (which MCP servers and plugins were connected) and by cache state (fresh first request against a warm one), median and p90 per cell (round 1, section 14).</p>
 <h3 id="33-gates-deny-advice-override">3.3 Gates: deny, advice, override</h3>
 <p>7 days, 189,651 events, 14,244 verdicts over 150 guards. Top denies: heredoc_backslash_guard 976, pulse_sync_stop 656 (9.8 percent of Stops), shell_guard 617, long_proof_guard 486, write_guard 469, safe_file_rewrite 354, task_status_gate 322, focus_wait_gate 307, upgrade_sweep_gate 274, codify_gate 268, pr_ready_guard 231; agent_gate 193 + orchestrator_guard 185 of 1,998 spawns = 16.5 percent of spawns refused. Advice: ups_dispatch on 51 percent of prompts, capability_router on 23 percent.
 Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override tokens typed, 375 refusals overridden within 3 calls (pr-ready-gate 67 of 196, shell-guard 50 of 371, long-proof 46 of 343, codex-lane 38 of 93, breath 33 of 77). Override tokens most used: FLOOR_OVER 1,016, SWARM_OK 889, POLL_OK 184, REVIEW_LOOP_OK 150, CODEX_REVIEW_OK 113.
@@ -354,7 +354,7 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 <td>8.3%</td>
 <td>tool 254, gate 233</td>
 <td>refusal 440</td>
-<td>shadow period, precision floor, auto-demotion on override rate; rewrite instead of deny for mechanical classes</td>
+<td>shadow period, precision floor, demotion on labelled precision (override rate = review signal); rewrite instead of deny for mechanical classes</td>
 </tr>
 <tr>
 <td>P03 gate missing</td>
@@ -1096,12 +1096,12 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 <p>Principles taken from the sources: the simplest thing that works, complexity only when measured [READ, building-effective-agents]; every harness part encodes an assumption about what the model cannot do, so each part is tested for whether it is still needed [READ, harness-design]; evals of 20 to 50 tasks drawn from real failures, both when a behaviour should occur and when it should not [READ, evals essay]; an archive of past results read by later attempts, natural-language reflection, and an empirical check before a change is kept [READ abstracts of DGM, SICA, GEPA, Reflexion, ACE; the cross-paper synthesis is INFERENCE]; incremental deltas instead of whole-file rewrites to avoid brevity bias and context collapse [READ, ACE abstract].</p>
 <h3 id="91-parts">9.1 Parts</h3>
 <ol>
-<li>Ledger. One SQLite file, write-ahead log, fsync: tables for sessions, spawns, tool calls (summary), gate verdicts, tasks, decisions, promises, lessons, changes, measurements. Writers: one PostToolUse hook, one Stop hook, the launcher, the teacher. Today's eight stores (task board, decisions, promises, attention, session tree, automations history, sweep entries, asks ledger) become views on it. Native OpenTelemetry events [READ, monitoring-usage.md] feed the same file through a local collector.</li>
-<li>Scoreboard. One page a day, one row per area: prefix tokens per first request, hook wait p50 and p90 per event, hooks killed, refusals and override rate per gate, spawn refusals, cache-bust tokens, tokens per day, inspection share, ceremony share, corrections per 100 prompts, verified-done rows per attention hour. The ratchet generalised: a ceiling per row that only falls; a break is a ledger event the loop picks up.</li>
-<li>Codify loop, automatic. Detect (correction turns, deny-then-override, the same tool error twice, rework within 24 hours, ratchet breaks) → cluster (attach to one of the 18 roots before creating a new one) → root cause (name the generator: tool, template, default, brief) → land on the lowest rung that works (fix the generator; change the interface so the error cannot be expressed; add a test; add advice; deny last; a prose law only for judgment no code can hold) → gate lifecycle (shadow 7 days or 50 would-deny events, precision at least 95 percent on a labelled sample, both-way fixtures in CI, p90 under 50 ms, demotion to shadow above a 5 percent override rate, retirement after 30 days of zero true denies, a law never cited in 60 days to the archive) → memory and ledger. Ivo approves only consent, money, send, credential and seal gates, promotions from shadow to deny, and a weekly one-screen harness diff. [SIMULATED H3 adopted as the design; its thresholds are starting values to be measured.]</li>
-<li>One dispatch. One resident process per event type with the gates imported once (no per-gate interpreter start), lanes in parallel as the product does [READ, hooks.md], a 50 ms p90 budget per gate, and the repo hooks moved under the same dispatcher so no hook can time out silently. The first act is to remove the four hooks of section 0 item 1.</li>
+<li>Ledger. One SQLite file, write-ahead log, fsync: tables for sessions, spawns, tool calls (summary), gate verdicts, tasks, decisions, promises, lessons, changes, measurements. Writers: one PostToolUse hook, one Stop hook, the launcher, the teacher. Today's eight stores (task board, decisions, promises, attention, session tree, automations history, sweep entries, asks ledger) become views on it. Native OpenTelemetry events [READ, monitoring-usage.md] feed the same file through a local collector. Write protocol (round 1, section 14): every event carries a ULID id and the writer's session id; writes are idempotent (insert-or-ignore on the id, so a hook that fires twice records once); a schema_version table with forward-only migrations; the eight stores stay as mirrors for two weeks while a nightly reconciliation diffs ids and counts both ways, and the cut-over needs seven days of zero diff.</li>
+<li>Scoreboard. One page a day, one row per area: prefix tokens per first request as a spread by toolset and cache state (median and p90 per cell, never one number), hook wait p50 and p90 per event, hooks killed, refusals and override rate per gate, spawn refusals, cache-bust tokens, tokens per day, inspection share, ceremony share, corrections per 100 prompts, verified-done rows per attention hour. The ratchet generalised: a ceiling per row that only falls; a break is a ledger event the loop picks up.</li>
+<li>Codify loop, automatic. Detect (correction turns, deny-then-override, the same tool error twice, rework within 24 hours, ratchet breaks) → cluster (attach to one of the 18 roots before creating a new one) → root cause (name the generator: tool, template, default, brief) → land on the lowest rung that works (fix the generator; change the interface so the error cannot be expressed; add a test; add advice; deny last; a prose law only for judgment no code can hold) → gate lifecycle (shadow 7 days or 50 would-deny events, precision at least 95 percent on a labelled sample, both-way fixtures in CI, p90 under 50 ms, demotion to shadow when the labelled precision of the last 50 denies falls under 95 percent, an override rate above 5 percent only queues those denies for labelling, retirement after 30 days of zero true denies, a law never cited in 60 days to the archive) → verification chain, explicit (tests; a reviewer of a second model family on the exact head; CI on the exact head sha, completed, never queued; merge; a READY verdict names the head sha and the completed check runs) → memory and ledger. A denied call is never re-fired verbatim: the next call differs or asks; a refusal-retry guard holds it (1,193 near-identical retries after a refusal in 14 days, section 3.3). Both from round 1, section 14. Ivo approves only consent, money, send, credential and seal gates, promotions from shadow to deny, and a weekly one-screen harness diff. [SIMULATED H3 adopted as the design; its thresholds are starting values to be measured.]</li>
+<li>One dispatch. One resident process per event type with the gates imported once (no per-gate interpreter start), lanes in parallel as the product does [READ, hooks.md], a 50 ms p90 budget per gate, and the repo hooks moved under the same dispatcher so no hook can time out silently. Every hook declares <code>writes</code> (the paths or stores it touches) or <code>pure</code> in the manifest, and a test regenerates the lane table from those declarations, so parallel lanes never race on one file; a hook that overruns its box denies (fail closed) and the dispatcher never drops that denial (round 1, section 14). The first act is to remove the four hooks of section 0 item 1.</li>
 <li>Law store in layers. L0, the prefix: identity, the 13 stop-sign laws, the router, under 12 thousand characters. L1, area laws in files loaded by path or tool (laws/, .claude/rules), each with a "last cited" stamp. L2, gates as code with tests and lifecycle. L3, memory and the ledger. Per-prompt injections (the graph reminder is about 10 KB on every prompt, at the hook output cap of 10,000 characters [READ]) are sent once per session and again only when their content changes.</li>
-<li>De-agenting layer: section 7.2, D1 to D10, built as hooks and a helper library.</li>
+<li>De-agenting layer: section 7.2, D1 to D10, built as hooks and a helper library. Every injected fact (D1 clock, D2 pack, D9 context pack) carries its as-of time and its source, and the model reads through to the source when the stamp is missing or stale; D6 includes a durability check before any scratch deletion (receipts, a real backup, a restore check); peer messages are typed envelopes (kind, from, to, refs, body) validated by a hook, relays included (round 1, section 14).</li>
 <li>Standing inference classes: section 7, last paragraph; each a nightly query with a threshold, an owner rung and a scoreboard row.</li>
 <li>Teacher and writer: the proposal engine of the loop; proposals carry ledger evidence; generator fixes and retirements ship behind tests without asking; everything else waits for the weekly diff.</li>
 </ol>
@@ -1119,8 +1119,8 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 <tbody>
 <tr>
 <td>prefix per first request</td>
-<td>136,561 tokens</td>
-<td>under 70,000</td>
+<td>136,561 tokens (one session, one toolset, fresh cache)</td>
+<td>under 70,000 for that cell; the other cells get targets after the S0 spread</td>
 </tr>
 <tr>
 <td>context per call (this session)</td>
@@ -1261,7 +1261,7 @@ Covered since the first draft: the official pages of the 14 outside alternatives
 <p>Blocked on Ivo (each with the recommendation, and what happens on each answer):
 1. Approve the plan and the stage order. Recommended: yes, S0 and S1 this week. On yes: the Orchestrator opens one session per stage with this plan as the brief. On no: name the stage to change.
 2. Setup tokens: mint 5 (seat A, seat B, marketing, seat D, seat E), keep ivo.petrovic on /login. Recommended: yes, this week; the token type does not change the policy exposure, and the daily refresh is what breaks. On yes: the five browser approvals are his; the import and the pool change are ours with the proofs of section 8 step 4. On no: the refresh machinery stays and P06 keeps its 201 lessons.
-3. Gate lifecycle: let the loop demote any gate above a 5 percent override rate to shadow without asking, except consent, money, send, credential and seal gates. Recommended: yes.
+3. Gate lifecycle: let the loop demote any gate whose labelled precision falls under 95 percent to shadow without asking, except consent, money, send, credential and seal gates; an override rate above 5 percent queues the gate's denies for labelling and never demotes by itself (re-keyed after round 1 with a colleague's agent, 21 Oct). Recommended: yes.
 4. Prefix: move the pool and seat bullets (about 20) and the comms detail out of L0 into L1 files, with the measured no-loss test. Recommended: yes.
 5. The headline metric for "doubled": verified-done rows per attention hour, with corrections per 100 prompts beside it. Recommended: yes, baseline for two weeks first.
 6. Cloud credit: $8.79 left on seat C (the credit payer), expiring 5 Nov. Recommended: renew if the cloud lane keeps its measured 40-unit batches under $2; otherwise the lane idles and work routes to the seats.</p>
@@ -1269,12 +1269,90 @@ Covered since the first draft: the official pages of the 14 outside alternatives
 - memory: feedback_full_research_unprompted_scope_is_implied.md, feedback_deagenting_and_self_inferred_upgrade_classes.md, feedback_bb_is_harness_rsi_may_replace_it.md, pointers in MEMORY.md.
 - ~/.claude/CLAUDE.md research bullet: "set AND SCOPE IMPLIED ... enumerate the full surface, coverage per part, counted-only = miss" (file 45,048 to 45,041 chars).
 - ~/.claude/ops/research-gate/research_gate.py: the gate text names the scope rule; its 7 tests pass; syntax checked.</p>
-<p>Found, not fixed (not this session's scope):
-- GIT-SYNC LOCK-CONFLICT: the Miras git-sync did not start; the single-instance lock is held by pid 24816 for over 40 minutes; the alarm fires on every prompt.
-- 429 visual-judge spawns in 14 days ran at the parent's model, against the floor law.
-- The instruction-shape gate refuses any growth of CLAUDE.md because the file is already over its 45,000-character ceiling; every amendment must be net negative.
-- The pool's the agent seat  seat already runs on a setup token with inference-only scope; the pool code supports the transition and nobody had used it for the rotating seats.
-- Cloud credit on both seats runs out on 5 Nov; seat C (the credit payer) has $8.79.</p>
+<p>Found, with what happened to each by the end of 21 Oct:
+- GIT-SYNC LOCK-CONFLICT: the Miras git-sync did not start; the single-instance lock was held by a dead pid for over an hour. Fixed the same day: on Windows the lock now carries the owner's exact process creation time and a recycled pid reads as dead; an alive pid whose start time cannot be read refuses (tcs PR, 7 tests, second-family judge clean).
+- 429 visual-judge spawns in 14 days ran at the parent's model, against the floor law. The lane file was already pinned; the spawns came from callers passing no effort, so S1 pins them in code (ten changes, item 8).
+- The instruction-shape gate refuses any growth of CLAUDE.md because the file is already over its 45,000-byte ceiling; every amendment must be net negative. Handed to the law-editing session for a 41-byte trim.
+- The pool's the agent seat  seat already runs on a setup token with inference-only scope; the pool code supports the transition and nobody had used it for the rotating seats. Waits on decision 2.
+- Cloud credit on both seats runs out on 5 Nov; seat C (the credit payer) has $8.79. Waits on decision 6.
+- Four repo hooks judged dead by their kill counts: the kills predate the current dispatcher log; today session_worktree runs in 32 ms and worktree_setup exits at once, while skill_catalog (318 to 212 ms) and obsidian_start (775 to 485 ms) were made cheaper with byte-identical output (tcs PR). The same hook still injects a 6,016-byte reminder on every prompt; that is an S1 item.
+- The report kit's own template tripped its number gate when a story carried a minutes measure; the gate now verifies phase durations against the phases' own time spans (3 test suites green).
+- The push guard could not see an order typed while a turn ran (the transcript stores it as a queued attachment, not a user turn); two of Ivo's orders read as "not typed in this session". Fixed with both-way tests.
+- A full worktree of the tcs tree (74,833 files, 8,355 LFS pointers) stalls past 2 minutes; a sparse cone with LFS smudge off is ready in 7 seconds. Recorded as the worktree recipe.</p>
+<h2 id="14-rounds-with-a-colleagues-agent-the-harness-on-their-side-read-against-this-plan">14. Rounds with a colleague's agent (the harness on their side, read against this plan)</h2>
+<p>Round 1, 21 Oct, from the raw file, nothing re-measured on their side. Twelve points; the verdict on each and the change it made:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Their point</th>
+<th>Verdict</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Demotion keyed on override rate demotes the most-bypassed gates first; key on labelled precision; a denied call is never re-fired</td>
+<td>Agreed</td>
+<td>Lifecycle re-keyed (items 5, 9.1.3, decision 3); refusal-retry guard added to S1</td>
+</tr>
+<tr>
+<td>One prefix baseline is one session's number; show the spread by toolset and cache state first</td>
+<td>Agreed</td>
+<td>3.2 and the scoreboard row carry the spread; targets per cell after S0</td>
+</tr>
+<tr>
+<td>Independent verification should be explicit: review, bug hunt, exact-head CI completed, then merge; a READY while CI is queued is a defect</td>
+<td>Agreed</td>
+<td>9.1.3 verification chain names the head sha and completed checks</td>
+</tr>
+<tr>
+<td>One ledger needs a write protocol: event ids, idempotent writes, schema versions, reconciliation of the old stores</td>
+<td>Agreed</td>
+<td>9.1.1 write protocol</td>
+</tr>
+<tr>
+<td>A hung hook denies; boxed denials must not be dropped by the dispatcher</td>
+<td>Lift</td>
+<td>9.1.4 fail-closed overrun; a check that the dispatcher keeps the denial</td>
+</tr>
+<tr>
+<td>Hooks declare their writes or pure; a test regenerates the lane table</td>
+<td>Lift</td>
+<td>9.1.4 manifest declarations</td>
+</tr>
+<tr>
+<td>The spawn guard pins unpinned spawns in code rather than refusing</td>
+<td>Lift</td>
+<td>item 8 and S1 item 4: pin by <code>updatedInput</code></td>
+</tr>
+<tr>
+<td>Typed peer messages validated by a hook</td>
+<td>Lift</td>
+<td>9.1.6 envelopes</td>
+</tr>
+<tr>
+<td>Gate precision with shadow and override fields in guard telemetry</td>
+<td>Theirs from us</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Native hook timings beside their own overrun log</td>
+<td>Theirs from us</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Injected facts carry as-of and source; the model reads through when stale</td>
+<td>Lift</td>
+<td>9.1.6 freshness rule for D1, D2, D9</td>
+</tr>
+<tr>
+<td>A durability check before scratch deletion; receipts need real backups and restore checks</td>
+<td>Lift</td>
+<td>9.1.6 D6 durability check</td>
+</tr>
+</tbody>
+</table></div>
+<p>Not taken: nothing in round 1 was refused. Open for round 2: their timebox and dispatch-group test as reference implementations; our refusal-retry guard and the labelled-precision sampler as the two gates that round 2 should read.</p>
 </main>
 </body>
 </html>
