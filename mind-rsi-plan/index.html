@@ -1,0 +1,1280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mind - RSI plan</title>
+<meta name="description" content="A research-and-planning report on rebuilding how one Claude Code harness is run: baselines, meta-patterns, law checks, a self-improving loop, de-agenting, setup tokens, staged migration.">
+<style>
+:root{--bg:#f7f7f4;--card:#fff;--ink:#1d1d1b;--muted:#5d5d58;--line:#e2e1da;--accent:#4b5bd6;--zebra:#fafaf7;--code:#f0efe9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141413;--card:#1d1d1b;--ink:#ecebe6;--muted:#a4a39c;--line:#33322e;--accent:#9aa5ff;--zebra:#21211f;--code:#262622}}
+:root[data-theme="dark"]{--bg:#141413;--card:#1d1d1b;--ink:#ecebe6;--muted:#a4a39c;--line:#33322e;--accent:#9aa5ff;--zebra:#21211f;--code:#262622}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.9rem;line-height:1.2;margin:.2em 0 .4em}h2{font-size:1.35rem;margin:1.8em 0 .5em;padding-top:.6em;border-top:1px solid var(--line)}
+h3{font-size:1.1rem;margin:1.4em 0 .4em}p,li{max-width:75ch}
+blockquote{margin:0 0 1.2em;padding:.6em 1em;border-left:3px solid var(--accent);color:var(--muted);background:var(--card)}
+.tw{overflow-x:auto;margin:1em 0;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}th,td{padding:.45em .6em;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{position:sticky;top:0;background:var(--card)}tbody tr:nth-child(even){background:var(--zebra)}
+code{background:var(--code);padding:.1em .3em;border-radius:3px;font-size:.92em}pre{overflow-x:auto;background:var(--code);padding:.8em;border-radius:6px}
+a{color:var(--accent)}.toc{font-size:14px;columns:2;column-gap:2em}.toc ul{padding-left:1.1em;margin:.2em 0}
+@media (max-width:760px){.toc{columns:1}body{font-size:15px}table{font-size:13.5px}}
+</style>
+</head>
+<body>
+<main>
+<blockquote>
+<p>Published 21 Oct 2026 for review by a colleague's agent. Numbers are as of that day. Seat names and machine paths are replaced by roles; nothing else is changed from the working file. Raw markdown: <a href="mind-rsi-plan.md">mind-rsi-plan.md</a>.</p>
+</blockquote>
+<h1 id="mind-rsi-plan">Mind - RSI plan</h1>
+<p>Plan for rebuilding how Claude Code is run here, written 21 October 2026 by the Mind session (b4080110). Research and planning only. Nothing in the harness was changed except two codified orders Ivo gave during the run (section 13).</p>
+<p>Mode labels on every claim: [MEASURED] a number this session computed from logs or transcripts; [READ] a quote from a fetched primary page, URL given; [REPORT] taken from one of our own earlier reports, named; [INFERENCE] our reading of measured facts, a design choice until its stage measures it; [SIMULATED] a hypothesis from the simulated expert pass, never evidence; [NOT DOCUMENTED] looked for and not found.</p>
+<h2 id="0-the-answer">0. The answer</h2>
+<p>The harness does its job, but it grew by stacking. It has 213 tool folders, 134 gate scripts registered 154 times across four hook events plus 17 direct hooks, 162 always-on law bullets and 2,147 memory notes, and no step that ever removes anything [MEASURED]. The bill is measurable. In the last 7 days hooks held sessions for 68 hours, half of it one repo gate that timed out on 3,032 of its 3,033 runs and so never judged anything [MEASURED]. Every turn starts with about 137 thousand tokens of prefix before any work [MEASURED]. A third of everything the model emits is a read-only inspection call that a script could have made, and 6,031 gate refusals in 14 days each cost a whole turn [MEASURED]. 15 percent of all recorded lessons are about the gates themselves, false refusals or missing ones [MEASURED].</p>
+<p>The Mind replaces stacking with a loop. One ledger holds every event. One scoreboard shows every cost per area each day. Laws live in layers so the prefix carries only what every turn needs. A gate must earn the right to deny in a shadow period and loses it when it is overridden. Standing self-checks look for their own upgrades: which tool is still the best, which law is still true, which gate still earns its keep, what is paid every turn for nothing, and what work needs no inference at all (de-agenting). The in-house bb tools stay, shrunk onto Claude Code's own primitives and one shared store; no outside framework covers their shape.</p>
+<p>Targets, each against its measured baseline: half the prefix, half the hook wait, half the refusals, half the inspection turns, no capability lost, no new wait added. Six decisions need Ivo (section 13). Everything else can be started this week in the staged order of section 11.</p>
+<h3 id="the-ten-changes-that-matter-most">The ten changes that matter most</h3>
+<ol>
+<li>Kill the dead hooks first: the repo's session_worktree gate (3,032 of 3,033 runs killed at its 30 s limit, median 37.7 s per run, 2,063 min in 7 days), skill_catalog (916 of 916 killed), obsidian_start (985 of 2,471 killed) and worktree_setup on SubagentStart (47 of 48 killed) [MEASURED]. A hook killed at its timeout has its output discarded [READ, hooks.md], so the first judged one run in seven days and the others judged a third or less of theirs.</li>
+<li>De-agent the clock, the ceremonies and the shell-fix loop: 1,504 identical date calls, 8,515 bookkeeping turns and 2,711 shell-syntax refusals in 14 days become hook-injected facts, one close command and a PreToolUse rewrite [MEASURED, section 7].</li>
+<li>Split the prefix into layers: L0 under 12 thousand characters, area rules loaded by path, per-prompt injections sent only when they change [INFERENCE on the measured 136,561-token first request].</li>
+<li>One ledger (SQLite, write-ahead log, fsync) replaces the eight state stores that today answer "what is open and who waits on whom" [MEASURED inventory, section 6].</li>
+<li>A gate lifecycle: shadow for 7 days or 50 would-deny events, at least 95 percent precision, p90 under 50 ms, automatic demotion above a 5 percent override rate, retirement after 30 days of zero true denies [SIMULATED H3, adopted as the design; numbers are starting values to be measured].</li>
+<li>The codify loop becomes automatic: detect from transcripts, cluster into the 18 patterns, name the generator, land on the lowest rung (fix the generator, change the interface, add a test, add advice, deny last, a prose law only for judgment no code can hold).</li>
+<li>Setup tokens for the five rotating seats; the owner seat stays on /login for Remote Control and claude.ai connectors [READ, section 8].</li>
+<li>Spawns at their floor by construction: 429 visual-judge spawns in 14 days ran at the parent's model [MEASURED]; the effort and model become part of the lane file, not the prompt.</li>
+<li>A standard helper library instead of per-session scratch scripts: story.json written 52 times, judge rubrics about 90 times, memory-trim and pointer scripts rewritten in 20 sessions [MEASURED].</li>
+<li>The teacher becomes the proposal engine of the loop and applies generator fixes behind tests itself; today the teacher made 23 proposals and 5 were acted on [REPORT, Harness Writer 10-15].</li>
+</ol>
+<h2 id="1-scope-the-closed-list-and-its-coverage">1. Scope: the closed list and its coverage</h2>
+<p>Ivo's rule for this plan (21 Oct): the scope is implied, never named; enumerate it yourself and a part only counted is a miss. A mechanical audit (surface_audit.py, no model) enumerated 430 parts and marked each against the drafts [MEASURED].</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>parts</th>
+<th>analysed</th>
+<th>counted only</th>
+<th>not covered at first</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ops tool folders</td>
+<td>213</td>
+<td>54</td>
+<td>1</td>
+<td>158</td>
+</tr>
+<tr>
+<td>repo hooks (tcs .claude/hooks)</td>
+<td>42</td>
+<td>2</td>
+<td>0</td>
+<td>40</td>
+</tr>
+<tr>
+<td>plugins</td>
+<td>32</td>
+<td>5</td>
+<td>0</td>
+<td>27</td>
+</tr>
+<tr>
+<td>personal skills</td>
+<td>30</td>
+<td>1</td>
+<td>0</td>
+<td>29</td>
+</tr>
+<tr>
+<td>repo files (settings, rules, CI, agents)</td>
+<td>24</td>
+<td>16</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>law files</td>
+<td>20</td>
+<td>1</td>
+<td>0</td>
+<td>19</td>
+</tr>
+<tr>
+<td>direct hooks in settings.json</td>
+<td>17</td>
+<td>0</td>
+<td>0</td>
+<td>17</td>
+</tr>
+<tr>
+<td>machine (scheduler, env, profile, versions)</td>
+<td>10</td>
+<td>0</td>
+<td>0</td>
+<td>10</td>
+</tr>
+<tr>
+<td>agent lanes</td>
+<td>9</td>
+<td>0</td>
+<td>0</td>
+<td>9</td>
+</tr>
+<tr>
+<td>settings and config files</td>
+<td>7</td>
+<td>3</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>profiles (personal, rc, miras, bb cache)</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>codex</td>
+<td>3</td>
+<td>2</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>workflows, CI, templates</td>
+<td>5</td>
+<td>0</td>
+<td>0</td>
+<td>5</td>
+</tr>
+</tbody>
+</table></div>
+<p>What the first pass missed and this plan now covers: eleven harness reports (The bb Gap Closed 09-26, Rebuilding bb In-House 09-28, Company bb Recipe 09-30 and 10-20, BB Tools Health 10-06, claude.dev Study 10-01, Claude Seat Facts 10-01, Claude Speed Up In Numbers 10-01, Harness Writer 10-15, Harness Teacher 09-28 and 10-21, Product Gaps Note 10-06), the prior bb research cache (713 features of getbb.app, 27 groups, 9 refute groups), the 158 ops folders beyond the bb set, every direct hook, the scheduled tasks (546 on the machine, about 184 ours), the PowerShell profile that launches everything (1,441 lines), the Codex lane (config, 340 session files), the GitHub Actions review bots, and the pool's account vault (7 seats). Still not judged one by one, only measured in aggregate: the 19 law files, 29 skills, 27 plugins, 40 repo hooks and 9 agent lanes (section 12 lists the gap and the stage that closes it).</p>
+<h2 id="2-the-harness-in-numbers-measured-unless-marked">2. The harness in numbers [MEASURED unless marked]</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Size</th>
+<th>Cost per turn or per day</th>
+<th>Last change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>~/.claude/CLAUDE.md</td>
+<td>45,041 chars, 191 lines, 162 bullets</td>
+<td>loaded every turn, ~11k tokens</td>
+<td>today</td>
+</tr>
+<tr>
+<td>tcs CLAUDE.md + AGENTS.md</td>
+<td>41,941 chars</td>
+<td>every turn in the repo, ~10k tokens</td>
+<td>10-01</td>
+</tr>
+<tr>
+<td>laws/</td>
+<td>20 files</td>
+<td>on demand</td>
+<td>this month</td>
+</tr>
+<tr>
+<td>tcs rules/</td>
+<td>33 files</td>
+<td>on demand</td>
+<td>this month</td>
+</tr>
+<tr>
+<td>memory</td>
+<td>2,147 notes; MEMORY.md 17.7 KB; archive 634 KB</td>
+<td>MEMORY.md every session (first 200 lines or 25 KB [READ, memory.md])</td>
+<td>hourly</td>
+</tr>
+<tr>
+<td>settings.json</td>
+<td>16.5 KB, 24 env keys, 11 hook events, 11 plugins, 7 allow + 9 deny rules</td>
+<td>parsed at launch</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>hook dispatch</td>
+<td>134 gate scripts, 154 registrations (PreToolUse 82, PostToolUse 15, UserPromptSubmit 16, Stop 41; a script can sit in several events) + 17 direct hooks</td>
+<td>every event</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>tcs hooks.json</td>
+<td>36 entries through run_hook.sh</td>
+<td>every event in the repo</td>
+<td>this month</td>
+</tr>
+<tr>
+<td>ops/</td>
+<td>213 folders, 5,537 code files, 1,150,537 lines (429,140 in sdk-toolset-bench and 283,162 in worktree-cleanup are vendored or generated), 5,424 test files</td>
+<td>-</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>ops callers</td>
+<td>128 run as hooks, 32 as automations, 13 as scheduled tasks, 32 manual or unknown</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>skills</td>
+<td>31 personal + 169 repo + 1 (catalog 262)</td>
+<td>listing every turn, ~7-8k tokens</td>
+<td>weekly</td>
+</tr>
+<tr>
+<td>agents</td>
+<td>9 user lanes + 6 repo</td>
+<td>list every turn, ~2k tokens</td>
+<td>weekly</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>5 global + 1 project + claude.ai connectors (Claude Docs, Searchable)</td>
+<td>tool search on by default [READ]</td>
+<td>-</td>
+</tr>
+<tr>
+<td>bb tools</td>
+<td>21 folders, ~100k lines, 52 py in the core 7</td>
+<td>state rows: cloud-router 11,629, attention 5,278, codex-bridge 4,665</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>automations</td>
+<td>103 stored jobs; 184 Claude-named scheduled tasks</td>
+<td>-</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>pool</td>
+<td>7 seats: 6 on /login with daily refresh, 1 on a setup token</td>
+<td>refresh T-90 min</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>report kit</td>
+<td>session-report 5,807 lines, 17 tests; 727 artifacts</td>
+<td>one report per session</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>upgrade sweep</td>
+<td>1,219 entries, 0 retirements</td>
+<td>one entry per tooling turn</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>harness sync</td>
+<td>writer 06:40, teacher 07:10; FULL_HARNESS.md 66 KB, LEARNED.md 863 KB</td>
+<td>daily</td>
+<td>daily</td>
+</tr>
+<tr>
+<td>transcripts on disk</td>
+<td>5,468 jsonl (926 sessions, 4,542 subagent)</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="3-baselines-measured">3. Baselines [MEASURED]</h2>
+<h3 id="31-hook-time-two-instruments-with-different-scopes-neither-alone-is-the-sessions-wait">3.1 Hook time, two instruments with different scopes (neither alone is the session's wait)</h3>
+<p>From dispatch.log (user gates only, in-process timer, 48,182 events): PreToolUse wall p50 292 ms, p90 1,110 ms, p99 6,952 ms over 23,589 events (median 27 guards per event; guards alone p50 145 ms, so 140-160 ms per event is process start and dispatch); PostToolUse p50 177, p90 742; Stop p50 1,161, p90 2,596 (40 guards); UserPromptSubmit p50 472, p90 992; total 27,735 s = 7.7 h of guard time in the log window.</p>
+<p>From the transcripts (session_cost.mjs, what the session actually waited, 7 days to 21 Oct 09:40): PreToolUse 4,336 firings, median 35.4 s, total 2,190.9 min; UserPromptSubmit 4,555, median 7.6 s, 1,341 min; Stop 4,307 plus 2,326 blocked, median 1.7 s, 313.9 min; SessionStart 593, median 4.6 s; SubagentStart 48, median 94.5 s. Total 4,092 min = 68.2 h. Hooks killed at their limit: 5,134. The killers: tcs session_worktree.py 3,032 of 3,033 runs (2,062.8 min, half of all wait), skill_catalog.py 916 of 916, obsidian_start_hook.py 985 of 2,471, worktree_setup.py on SubagentStart 47 of 48, agcm_hook.py median 18.5 s (1,182 min).</p>
+<p>Last 24 hours, after Hook Speed One to Four: Stop median 1.2 s p90 3.2 s, PreToolUse 0.4 s p90 2.2 s, UserPromptSubmit 0.5 s p90 1.9 s, SessionStart 2.4 s p90 7.6 s; 62.9 min of hook wait in the day; still 9 of 16 tcs hook_dispatch.sh runs killed at 44 s. The ratchet at 04:15 shows every judged event over its ceiling (Stop median 1,334 vs 1,100 ms, Stop p90 3,738 vs 1,500, PreToolUse p90 3,112 vs 800, SessionStart p90 8,906 vs 4,500).</p>
+<p>The docs say hooks of one event run in parallel and a timed-out hook's output is discarded [READ, https://code.claude.com/docs/en/hooks.md: "When an event fires, Claude Code runs the matching hooks in parallel"; "Claude Code cancels a command, http, or mcp_tool hook that reaches its timeout, discarding the hook's output"]. Our one-process dispatcher ran its 40 Stop gates as one serial chain until Hook Speed Three added four parallel lanes [REPORT, Hook Speed Three, 21 Oct].</p>
+<h3 id="32-tokens-and-the-prefix">3.2 Tokens and the prefix</h3>
+<p>This session's first request: 136,561 input tokens (system prompt 18,859 chars, 28 tool schemas 112,361 chars, then both CLAUDE.md files, MEMORY.md, the skill listing, agent list, MCP instructions and first-prompt injections). Context per call averaged 277,640 tokens, 57 cache-read tokens per output token. Fleet, 24 hours: 19,154 calls, 5,218 million tokens, of which 4,988 million cache reads. Fleet, 7 days: 83,448 calls, 26,066 million tokens. Cache busts on 20 Oct: 153 busts rewrote 42.67 million tokens (seat rotation 58 busts = 20.86 million; after compaction 74; gap over 60 min 18; unexplained 1 = 301,920). Docs: a 1-hour cache write costs 2x, a read 0.1x; changing effort invalidates cached blocks [READ, https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md].</p>
+<h3 id="33-gates-deny-advice-override">3.3 Gates: deny, advice, override</h3>
+<p>7 days, 189,651 events, 14,244 verdicts over 150 guards. Top denies: heredoc_backslash_guard 976, pulse_sync_stop 656 (9.8 percent of Stops), shell_guard 617, long_proof_guard 486, write_guard 469, safe_file_rewrite 354, task_status_gate 322, focus_wait_gate 307, upgrade_sweep_gate 274, codify_gate 268, pr_ready_guard 231; agent_gate 193 + orchestrator_guard 185 of 1,998 spawns = 16.5 percent of spawns refused. Advice: ups_dispatch on 51 percent of prompts, capability_router on 23 percent.
+Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override tokens typed, 375 refusals overridden within 3 calls (pr-ready-gate 67 of 196, shell-guard 50 of 371, long-proof 46 of 343, codex-lane 38 of 93, breath 33 of 77). Override tokens most used: FLOOR_OVER 1,016, SWARM_OK 889, POLL_OK 184, REVIEW_LOOP_OK 150, CODEX_REVIEW_OK 113.
+14 days, all transcripts: 6,031 refusals; next call near-identical 1,193 (20 percent), next call carrying an override or background flag 180.</p>
+<h3 id="34-pool-and-credit">3.4 Pool and credit</h3>
+<p>Seats: the agent seat  (setup token, scope inference-only, expires about a year out), seat A, seat E, ivo.petrovic, marketing, seat B, seat D (all /login, refresh tokens, access expiring 2026-10-21). Cloud credit: seat C (the credit payer) $8.79 of $250 left, the owner seat  $1.37 of $250, both expire 2026-11-05 08:59; the 20-Oct health report had $437 of $500 and a spend of $45 per 24 h against a $14.9 pace [REPORT, BB Tools Health 10-06].</p>
+<h2 id="4-meta-patterns-7266-lessons-in-18-roots-measured">4. Meta-patterns: 7,266 lessons in 18 roots [MEASURED]</h2>
+<p>Source: every memory note (2,147), archive pointer (2,113), upgrade-sweep entry (1,216) and devhistory lesson line (2,051), clustered by 42 cloud-credit units against a fixed taxonomy (no main-loop inference).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Root pattern</th>
+<th>lessons</th>
+<th>share</th>
+<th>where fixes landed (top)</th>
+<th>cost class (top)</th>
+<th>one structural fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P09 claim without proof</td>
+<td>961</td>
+<td>13.2%</td>
+<td>tool 349, memory only 238, law 174</td>
+<td>wrong output 655</td>
+<td>"done" can only be written to the ledger with a probe id attached; builders refuse a claim without its probe</td>
+</tr>
+<tr>
+<td>P12 report and visual quality</td>
+<td>775</td>
+<td>10.7%</td>
+<td>tool 299, law 168</td>
+<td>wrong output 529</td>
+<td>one generator (report kit) that cannot emit a violation; the 7 report gates become its unit tests</td>
+</tr>
+<tr>
+<td>P16 domain semantics</td>
+<td>680</td>
+<td>9.4%</td>
+<td>memory only 312</td>
+<td>wrong output 496</td>
+<td>domain rule files with tests (pulse, seo, house terms) instead of 312 memory-only lessons</td>
+</tr>
+<tr>
+<td>P04 stale state</td>
+<td>609</td>
+<td>8.4%</td>
+<td>tool 254</td>
+<td>wrong output 441, wait 71</td>
+<td>every read carries an as-of stamp; one source per fact; fsync writes (done 10-20)</td>
+</tr>
+<tr>
+<td>P02 gate false refusal</td>
+<td>601</td>
+<td>8.3%</td>
+<td>tool 254, gate 233</td>
+<td>refusal 440</td>
+<td>shadow period, precision floor, auto-demotion on override rate; rewrite instead of deny for mechanical classes</td>
+</tr>
+<tr>
+<td>P03 gate missing</td>
+<td>505</td>
+<td>7.0%</td>
+<td>gate 257, tool 167</td>
+<td>wrong output 297, lost work 49</td>
+<td>a test on the generator first; a gate only when the generator cannot be fixed; recurrence visible in the ledger</td>
+</tr>
+<tr>
+<td>P18 session orchestration</td>
+<td>386</td>
+<td>5.3%</td>
+<td>tool 130</td>
+<td>wait 102</td>
+<td>one ledger view of sessions, native background sessions, fewer daemons</td>
+</tr>
+<tr>
+<td>P10 wrong transport</td>
+<td>328</td>
+<td>4.5%</td>
+<td>memory only 185</td>
+<td>wrong output 145</td>
+<td>the capability router as a table applied by the tools, not remembered</td>
+</tr>
+<tr>
+<td>P17 process law</td>
+<td>304</td>
+<td>4.2%</td>
+<td>memory only 86, law 75</td>
+<td>wrong output 93</td>
+<td>the law lives in the tool that runs the process (pr_ready.py), not in prose</td>
+</tr>
+<tr>
+<td>P01 shell quoting</td>
+<td>256</td>
+<td>3.5%</td>
+<td>tool 93</td>
+<td>wrong output 154</td>
+<td>a script-file runner; PreToolUse rewrites a heredoc into a file instead of refusing</td>
+</tr>
+<tr>
+<td>P05 shared file collision</td>
+<td>254</td>
+<td>3.5%</td>
+<td>tool 115</td>
+<td>lost work 98</td>
+<td>append-only ledgers and per-session worktrees for shared registers</td>
+</tr>
+<tr>
+<td>P08 wait and latency</td>
+<td>245</td>
+<td>3.4%</td>
+<td>tool 152</td>
+<td>wait 226</td>
+<td>background-first defaults, hook latency budget, Monitor instead of sleep loops</td>
+</tr>
+<tr>
+<td>P15 Claude Code behaviour</td>
+<td>244</td>
+<td>3.4%</td>
+<td>tool 88, memory 83</td>
+<td>wrong output 95</td>
+<td>changelog watch to law the same day (exists), tests pinned to the CLI version</td>
+</tr>
+<tr>
+<td>P07 token cost</td>
+<td>224</td>
+<td>3.1%</td>
+<td>tool 63</td>
+<td>tokens 155</td>
+<td>prefix budget on the scoreboard; seat rotation only at session boundaries</td>
+</tr>
+<tr>
+<td>P13 people and comms</td>
+<td>222</td>
+<td>3.1%</td>
+<td>gate 73, law 59</td>
+<td>human time 123</td>
+<td>one outbox state machine with the voice, pronoun and recipient checks inside it</td>
+</tr>
+<tr>
+<td>P11 instruction not followed</td>
+<td>219</td>
+<td>3.0%</td>
+<td>law 131</td>
+<td>human time 79</td>
+<td>fewer and shorter laws, the ones that matter enforced in code; "If your CLAUDE.md is too long, Claude ignores half of it" [READ, best-practices.md]</td>
+</tr>
+<tr>
+<td>P06 seat and token</td>
+<td>201</td>
+<td>2.8%</td>
+<td>tool 90</td>
+<td>wait 60</td>
+<td>setup tokens for rotating seats (section 8)</td>
+</tr>
+<tr>
+<td>P14 machine</td>
+<td>141</td>
+<td>1.9%</td>
+<td>tool 60</td>
+<td>wait 51</td>
+<td>machine probe and sweeps folded into the scoreboard</td>
+</tr>
+<tr>
+<td>other</td>
+<td>111</td>
+<td>1.5%</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>Two readings of the table. First, 1,106 lessons (15.2 percent) are about gates themselves; the harness generates its own incidents. Second, 1,789 lessons landed only in memory; a memory note is read by its index line only, so most of them never reach the next session; the ledger in section 9 is the fix.</p>
+<h2 id="5-laws-checked-against-their-sources">5. Laws checked against their sources</h2>
+<p>Nine reading passes over code.claude.com (239 URLs enumerated), the platform docs (813 URLs), the Anthropic site (569 URLs, 24 engineering essays), the changelog (426 versions, 2.1.306 installed) and 8 self-improvement papers; then an adversarial pass re-fetched 27 load-bearing claims: 23 confirmed verbatim, 3 different in a detail, 1 not found. A second-family judge (GPT-6 Astra, effort ultra, 461 s) then read the draft table and scored it 4 of 10 with 24 findings, most of them one kind: a verdict wider than its quote, or a number not anchored in a measured table. The table below is the corrected one: each row names what the quote establishes and what remains ours to test. All quotes are from the re-fetched pages.</p>
+<h3 id="rewrite-or-probe-first-the-source-says-otherwise-or-says-less-than-the-law-assumes">Rewrite, or probe first (the source says otherwise, or says less than the law assumes)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Our bullet</th>
+<th>What the page says [READ]</th>
+<th>What that establishes</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"AGENT = full price per turn"</td>
+<td>plugins: "The full text of a skill or agent loads only when it's used"</td>
+<td>only name and description are paid every turn</td>
+<td>rewrite</td>
+</tr>
+<tr>
+<td><code>subagentPromptCacheTtl</code> as a settings key</td>
+<td>sub-agents.md: "experimental ... cacheTtl ... reads the field only from subagent files"; the settings key appears on none of five pages searched</td>
+<td>the documented mechanism is the agent file; our key is unsourced, not disproved</td>
+<td>probe the key, then rewrite</td>
+</tr>
+<tr>
+<td>"a background Bash dies about 5 s after the result" (laws file)</td>
+<td>headless.md: a <code>-p</code> run stays open for background work it started, 10-minute idle ceiling</td>
+<td>the parent run waits; the 5 s claim is unsupported</td>
+<td>probe with a timed background call, then rewrite</td>
+</tr>
+<tr>
+<td>"nothing auto-backgrounds without a flag"</td>
+<td>tools-reference.md: a foreground command at its timeout moves to the background by default; off with <code>CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1</code> or bare mode</td>
+<td>the default is the opposite of the law</td>
+<td>rewrite</td>
+</tr>
+<tr>
+<td>"-p background 30 min"</td>
+<td>tools-reference.md: text-prompt <code>-p</code> runs default to 10 minutes; other unattended runs 30; max 2 h</td>
+<td>30 is right for SDK and CI, wrong for a text-prompt <code>-p</code></td>
+<td>add the 10-minute case</td>
+</tr>
+<tr>
+<td>"a headless claude -p is never a session"</td>
+<td>headless.md: <code>-p</code> output carries a session_id; <code>--resume</code> continues it</td>
+<td>"never" is refuted</td>
+<td>rewrite</td>
+</tr>
+<tr>
+<td>"no thinking rituals" as a blanket ban</td>
+<td>claude-think-tool: think guidance in the system prompt was more effective</td>
+<td>one studied phrase helped; the ban's scope is wider than the study</td>
+<td>test each banned phrase in an eval before keeping the ban [INFERENCE]</td>
+</tr>
+<tr>
+<td>"150,000-char budget, past it every session warns"</td>
+<td>memory.md: "target under 200 lines per CLAUDE.md file"; no 150k figure on any page</td>
+<td>the budget is a local figure; the warning claim is unsourced</td>
+<td>keep the gate, mark both numbers local</td>
+</tr>
+<tr>
+<td>"UPGRADES ARE NEVER DOWNGRADES"</td>
+<td>harness-design essay: "removing one component at a time and reviewing what impact it had on the final result" (our earlier "anti-pattern" quote is not on the page)</td>
+<td>the essay recommends measured removal, not a ban on removal</td>
+<td>rewrite: remove after a measured one-at-a-time test</td>
+</tr>
+<tr>
+<td>native Workflow cap 16</td>
+<td>sub-agents.md: 20 concurrent subagents by default, the main-loop fan-out cap; the installed claude.exe 2.1.306 holds <code>Math.min(16,Math.max(2,e-2))</code> once, beside the override <code>CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS</code> [MEASURED, binary grep 21 Oct]</td>
+<td>two caps: the Workflow tool's formula tops out at 16 and follows the box's cores; Agent fan-out is 20</td>
+<td>keep; the law names both</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="confirmed-with-the-number-we-lacked-read-httpscodeclaudecomdocsen">Confirmed, with the number we lacked [READ, https://code.claude.com/docs/en/...]</h3>
+<ul>
+<li>hooks.md: parallel hooks; same handler in two settings files runs once; stdout and additionalContext capped at 10,000 characters; defaults 600 s command, 30 s UserPromptSubmit, 1.5 s SessionEnd, 30 s model-switch hooks, 10 s MessageDisplay; "8-consecutive-continuation cap" for Stop blocks, reset on a tool call; <code>last_assistant_message</code> in the Stop payload; StopFailure "have no decision control"; on PreToolUse a timed-out hook does not block "except for hooks whose failure blocks the action"; <code>onFailure: block</code> for command and http hooks, v2.1.295+.</li>
+<li>memory.md and best-practices.md: 200 lines target; "Claude ignores half of it"; MEMORY.md first 200 lines or 25KB; imports load at launch and "don't reduce its context cost"; subdirectory CLAUDE.md loads once Claude reads, writes or edits there.</li>
+<li>sub-agents.md: 20 concurrent, three layers deep; <code>effort</code> "Overrides the session effort level, but not the CLAUDE_CODE_EFFORT_LEVEL environment variable"; fork shares the parent cache, a fresh subagent has its own.</li>
+<li>prompt-caching.md: 1.25x and 2x writes, 0.1x reads; effort change invalidates message blocks.</li>
+<li>tools-reference.md, headless.md, agent-view.md, cross-session-messaging.md: background sessions via <code>--bg</code>, listed by <code>claude agents</code>, stopped after about an hour unattached; 100 cross-session messages held; a cloud session cannot answer a message from another machine.</li>
+<li>monitoring-usage.md: OpenTelemetry events <code>claude_code.hook_execution_complete</code> (total_duration_ms), span <code>claude_code.tool</code> (duration_ms), <code>api_request</code> with cache read and creation tokens: a native scoreboard source we do not use.</li>
+<li>essays: "we recommend finding the simplest solution possible, and only increasing complexity when needed"; "every component in a harness encodes an assumption about what the model can't do on its own"; "Out of the box, Claude is a poor QA agent".</li>
+</ul>
+<h3 id="keep-sources-support-them-as-written-the-model-floor-law-the-consent-boundary-send-miras-peer-message-the-workprivate-seal-probe-before-claim-long-proofs-in-the-background-one-wave-per-seat-the-research-law">Keep (sources support them as written): the model-floor law, the consent boundary (send, Miras, peer-message), the work/private seal, probe-before-claim, long proofs in the background, one wave per seat, the research law.</h3>
+<h3 id="what-the-sources-are-silent-on-not-documented-a-hook-latency-budget-any-count-or-ceiling-of-gates-the-30000-character-skill-listing-cap-and-skilllistingbudgetfraction-claude_code_max_mcp_description_length-whether-a-setup-token-counts-against-the-seats-usage-whether-a-new-setup-token-revokes-the-old-one">What the sources are silent on [NOT DOCUMENTED]: a hook latency budget; any count or ceiling of gates; the 30,000-character skill listing cap and <code>skillListingBudgetFraction</code>; <code>CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH</code>; whether a setup token counts against the seat's usage; whether a new setup token revokes the old one.</h3>
+<h2 id="6-the-bb-leg-inventory-record-native-coverage-alternatives-verdicts">6. The bb leg: inventory, record, native coverage, alternatives, verdicts</h2>
+<h3 id="61-what-exists-measured-bb_inventorymd">6.1 What exists [MEASURED, bb_inventory.md]</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>code lines</th>
+<th>state rows</th>
+<th>tests</th>
+<th>depends on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>control-center</td>
+<td>37,121</td>
+<td>2,592</td>
+<td>many</td>
+<td>14 other bb tools</td>
+</tr>
+<tr>
+<td>session-launcher</td>
+<td>7,609</td>
+<td>826</td>
+<td>31</td>
+<td>task-board, session-tree, automations, attention</td>
+</tr>
+<tr>
+<td>codex-bridge</td>
+<td>6,431</td>
+<td>4,665</td>
+<td>10</td>
+<td>claude-rc, claude-sync</td>
+</tr>
+<tr>
+<td>session-report</td>
+<td>5,807</td>
+<td>20</td>
+<td>17</td>
+<td>task-board, automations, codex-bridge, session-name</td>
+</tr>
+<tr>
+<td>automations</td>
+<td>5,730</td>
+<td>148 (103 jobs)</td>
+<td>-</td>
+<td>task-board, session-tree, control-center, claude-pool</td>
+</tr>
+<tr>
+<td>task-board</td>
+<td>5,466</td>
+<td>21</td>
+<td>5</td>
+<td>session-tree, codex-bridge, session-name</td>
+</tr>
+<tr>
+<td>claude-pool</td>
+<td>5,347</td>
+<td>7 accounts</td>
+<td>6</td>
+<td>-</td>
+</tr>
+<tr>
+<td>cloud-router</td>
+<td>4,287</td>
+<td>11,629</td>
+<td>-</td>
+<td>7 bb tools</td>
+</tr>
+<tr>
+<td>session-tree</td>
+<td>3,562</td>
+<td>895</td>
+<td>7</td>
+<td>7 bb tools</td>
+</tr>
+<tr>
+<td>upgrade-sweep</td>
+<td>3,483</td>
+<td>1,228</td>
+<td>6</td>
+<td>5 bb tools</td>
+</tr>
+<tr>
+<td>attention</td>
+<td>2,435</td>
+<td>5,278</td>
+<td>2</td>
+<td>control-center</td>
+</tr>
+<tr>
+<td>secret-intake</td>
+<td>1,892</td>
+<td>0</td>
+<td>1</td>
+<td>session-launcher, claude-pool</td>
+</tr>
+<tr>
+<td>claude-sync</td>
+<td>1,888</td>
+<td>0</td>
+<td>1</td>
+<td>automations, control-center, upgrade-sweep, codify-gate</td>
+</tr>
+<tr>
+<td>recall</td>
+<td>1,878</td>
+<td>index</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr>
+<td>claude-rc</td>
+<td>1,451 (ps1)</td>
+<td>0</td>
+<td>2</td>
+<td>-</td>
+</tr>
+<tr>
+<td>standing-orders</td>
+<td>689</td>
+<td>0</td>
+<td>2</td>
+<td>queue-watch</td>
+</tr>
+<tr>
+<td>session-name</td>
+<td>470</td>
+<td>161</td>
+<td>-</td>
+<td>session-tree, claude-rc</td>
+</tr>
+<tr>
+<td>chat-watch</td>
+<td>338</td>
+<td>64</td>
+<td>0</td>
+<td>task-board, automations, attention</td>
+</tr>
+<tr>
+<td>codify-gate</td>
+<td>328</td>
+<td>0</td>
+<td>107</td>
+<td>-</td>
+</tr>
+<tr>
+<td>promise-ledger</td>
+<td>302</td>
+<td>0</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr>
+<td>queue-watch</td>
+<td>34</td>
+<td>0</td>
+<td>0</td>
+<td>-</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="62-the-record-report">6.2 The record [REPORT]</h3>
+<ul>
+<li>The bb Gap, Closed (26 Sep): 713 features read from getbb.app's source, 263 high value, 27 groups; 16 groups already native, 9 partly, 2 lacking; 12 tools built with 1,368 checks; 35 percent less wait before each edit; 7 groups left out on purpose.</li>
+<li>Rebuilding bb In-House (28 Sep): 12 groups built in, 14 build it (16.5 build days), 1 skip; rule "never point ANTHROPIC_BASE_URL or ANTHROPIC_AUTH_TOKEN at a shared local hub of pooled logins".</li>
+<li>BB Tools Health (6 Oct): 17 tools, 8 had a fault, 10 faults fixed at the cause, all 17 pass the second check; 10 scheduled jobs had been skipped silently; the cloud router had stopped itself for 33 hours unseen.</li>
+<li>Company bb Recipe (20 Oct): 30 tools in the recipe, 183 folders, 903 changes logged, 4 open weak spots; the two-way sync was retired after it cost 62 CPU-hours re-hashing transcripts.</li>
+<li>Harness Teacher (21 Oct): 5 proposals, none applied; 9 of 14 dispatcher runs timed out; the teacher proposes and never edits.</li>
+</ul>
+<h3 id="63-what-claude-code-now-does-natively-read-codeclaudecom">6.3 What Claude Code now does natively [READ, code.claude.com]</h3>
+<p>Background sessions (<code>claude --bg</code>, <code>claude agents</code>, <code>claude logs</code>, <code>claude rm</code>; stopped after about an hour unattached); <code>--name</code>, <code>/rename</code>, <code>claude attach</code> (2.1.290); cross-session <code>SendMessage</code>/<code>ListAgents</code> with <code>notify_when_idle</code> (12-hour cap, 100 messages held); agent teams with a shared task list (experimental, one team per session, no sharing across sessions); session <code>/loop</code> and Cron tools (fire only while the session runs, 50 per session, expire in 7 days); cloud scheduled tasks (minimum interval 1 hour, fresh clone, no local files); desktop scheduled tasks (persistent, machine on); worktrees with <code>.worktreeinclude</code>; Notification hook types <code>agent_needs_input</code> and <code>agent_completed</code>; mobile push. Silent in the docs: a cross-session task board, a queue that starts rows on state, fact recall, secret intake from the operator, a single attention list across sessions, seat rotation, credit routing.</p>
+<h3 id="64-outside-alternatives-read-the-official-page-of-each-of-14-candidates-fetched-on-21-oct">6.4 Outside alternatives [READ, the official page of each of 14 candidates fetched on 21 Oct]</h3>
+<p>One reading unit fetched the official page of each candidate (3 followed a redirect; none failed) and marked, for each of 13 harness functions, whether that page documents it. The pages came back through a fetch tool's extraction, so the quotes are the extractor's wording; candidates 2 and 6 were read as page text. One page per candidate: a function absent from an overview page may still exist deeper in the product.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Candidate (page)</th>
+<th>What it is, in its own words</th>
+<th>Functions the page documents, of 13</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude Agent SDK (code.claude.com/docs/en/agent-sdk)</td>
+<td>"Build production AI agents with Claude Code as a library."</td>
+<td>4 in part: spawn subagents, resume or fork, memory, hooks as "custom code at key points"</td>
+</tr>
+<tr>
+<td>Claude Code scheduled tasks (code.claude.com/docs/en/routines.md)</td>
+<td>"Put Claude Code on autopilot... run in the cloud on a schedule, on API calls, or on GitHub events."</td>
+<td>scheduled jobs; cloud routing in part ("self-hosted environment when routed there")</td>
+</tr>
+<tr>
+<td>Temporal (docs.temporal.io/evaluate/use-cases-design-patterns)</td>
+<td>"Temporal applications fall into a handful of shapes."</td>
+<td>6, five in part: child workflows, resume, a job queue, schedules, messages between workflows, routing work to hardware</td>
+</tr>
+<tr>
+<td>OpenAI Agents SDK (openai.github.io/openai-agents-python)</td>
+<td>"enables you to build agentic AI apps."</td>
+<td>3 in part: resumable sessions, a persistent memory layer, guardrails that fail fast</td>
+</tr>
+<tr>
+<td>LangGraph (docs.langchain.com/oss/python/langgraph/overview)</td>
+<td>"a low-level orchestration framework and runtime."</td>
+<td>2 in part: resume, long-term memory across sessions</td>
+</tr>
+<tr>
+<td>Microsoft Agent Framework (learn.microsoft.com/en-us/agent-framework/overview/)</td>
+<td>"Build AI agents and multi-agent workflows in .NET, Python, and Go"</td>
+<td>2 in part: memory context providers, middleware intercepting agent actions</td>
+</tr>
+<tr>
+<td>CrewAI (docs.crewai.com)</td>
+<td>"orchestrating autonomous AI agents and building complex workflows."</td>
+<td>1 in part: agents communicate and collaborate</td>
+</tr>
+<tr>
+<td>Letta (docs.letta.com)</td>
+<td>"The platform for building stateful agents."</td>
+<td>1: schedules for recurring prompts</td>
+</tr>
+<tr>
+<td>OpenHands (docs.openhands.dev)</td>
+<td>"a community focused on AI-driven development."</td>
+<td>1 in part: scheduled and event-driven automation</td>
+</tr>
+<tr>
+<td>SWE-agent (swe-agent.com)</td>
+<td>"enables your language model of choice ... to autonomously use tools"</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Inngest AgentKit (agentkit.inngest.com/overview)</td>
+<td>"a framework to build AI Agents, from single model inference calls to multi-agent systems"</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Mastra (mastra.ai/docs)</td>
+<td>"a TypeScript framework for building AI agents and applications."</td>
+<td>1: recurring schedules</td>
+</tr>
+<tr>
+<td>Google ADK (adk.dev)</td>
+<td>"the open-source agent development framework."</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Darwin Godel Machine (github.com/jennyzzt/dgm)</td>
+<td>"a novel self-improving system that iteratively modifies its own code."</td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+<p>Reading [READ for the cells, INFERENCE for the verdict]: no page documents a cross-session task board, a queue of runnable rows, runtime secret intake, an attention list, seat rotation or a lesson-to-rule loop. Scheduled jobs is the one function documented on five pages. Temporal covers the most, six functions with five of them in part, and it is a workflow engine, not a Claude Code harness. The bb shape has no outside twin, so the fold-onto-native verdicts in 6.5 stand. One open question, owner the S5 session, by 2026-12-05: Temporal as the engine under the ledger and the queue (the company already runs Temporal pipelines), judged by a one-week spike against native background sessions.</p>
+<h3 id="65-verdict-per-tool-inference-from-61-to-64">6.5 Verdict per tool [INFERENCE from 6.1 to 6.4]</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Verdict</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>task-board</td>
+<td>keep as a ledger view</td>
+<td>no native cross-session board; storage moves to the ledger</td>
+</tr>
+<tr>
+<td>session-tree</td>
+<td>fold onto native background sessions</td>
+<td><code>--bg</code>, <code>claude agents</code>, <code>notify_when_idle</code> cover spawn, wait and remove; keep the receipt row and the effort pin</td>
+</tr>
+<tr>
+<td>session-launcher</td>
+<td>keep, smaller</td>
+<td>native names since 2.1.290; the one-window tab queue and launch_verify (prompt-lost incidents) stay</td>
+</tr>
+<tr>
+<td>queue-watch</td>
+<td>fold into ledger + automations</td>
+<td>34 lines</td>
+</tr>
+<tr>
+<td>recall</td>
+<td>keep; index inside the ledger</td>
+<td>native has no fact search</td>
+</tr>
+<tr>
+<td>automations</td>
+<td>keep; audit yield per job</td>
+<td>103 jobs, 184 scheduled tasks; native scheduling is session-bound or cloud-only</td>
+</tr>
+<tr>
+<td>secret-intake</td>
+<td>keep</td>
+<td>no native twin</td>
+</tr>
+<tr>
+<td>attention</td>
+<td>fold half</td>
+<td>native Notification hook and Needs input cover the signal; keep the cross-session list as a view</td>
+</tr>
+<tr>
+<td>promise-ledger, decisions</td>
+<td>fold into the ledger</td>
+<td>same shape: a row waiting on someone</td>
+</tr>
+<tr>
+<td>control-center</td>
+<td>split</td>
+<td>37k lines; keep sampler and teacher, panels read the ledger</td>
+</tr>
+<tr>
+<td>chat-watch</td>
+<td>keep</td>
+<td>an automation with no twin</td>
+</tr>
+<tr>
+<td>claude-pool, claude-rc</td>
+<td>keep; simplify with setup tokens</td>
+<td>section 8 removes the refresh and revoke machinery (P06)</td>
+</tr>
+<tr>
+<td>cloud-router</td>
+<td>keep while credit exists</td>
+<td>$8.79 left, expires 5 Nov; a lane, not a daemon, afterwards</td>
+</tr>
+<tr>
+<td>codex-bridge</td>
+<td>keep</td>
+<td>the second-family judge the law requires</td>
+</tr>
+<tr>
+<td>standing-orders</td>
+<td>keep inside the dispatch</td>
+<td>delta injection only</td>
+</tr>
+<tr>
+<td>session-name</td>
+<td>retire</td>
+<td>native <code>--name</code> and <code>/rename</code>; keep the style check</td>
+</tr>
+<tr>
+<td>session-report</td>
+<td>keep as the only report writer</td>
+<td>the P12 fix</td>
+</tr>
+<tr>
+<td>upgrade-sweep</td>
+<td>fold into the ledger</td>
+<td>the change log is a ledger table; keep the page</td>
+</tr>
+<tr>
+<td>codify-gate</td>
+<td>replace</td>
+<td>the loop codifies from the ledger; a gate that asks the model to codify is the old shape</td>
+</tr>
+<tr>
+<td>claude-sync, teacher</td>
+<td>keep; teacher becomes the proposal engine</td>
+<td>23 proposals made, 5 acted on</td>
+</tr>
+<tr>
+<td>## 7. De-agenting: the plan, from the sessions on disk</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>Definition (Ivo, 21 Oct): remove inference where it is superfluous; what is a deterministic tool call becomes a script or a hook, never where accuracy drops.</p>
+<h3 id="71-statistics-14-days-2846-transcripts-346-sessions-2500-subagent-measured-deagent_minerpy-no-model-calls">7.1 Statistics, 14 days, 2,846 transcripts (346 sessions, 2,500 subagent) [MEASURED, deagent_miner.py, no model calls]</h3>
+<p>Caveat: Claude Code writes each content block as its own record, so "turn" here means one tool call or one text block; token sums repeat a response's usage across its blocks and overstate absolutes by about a quarter against session_cost (67 billion here against about 52 billion scaled from the 7-day total). Shares and counts are what to read.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tool calls</td>
+<td>177,338; text blocks 37,735</td>
+</tr>
+<tr>
+<td>read-only inspection calls (ls, cat, head, tail, grep, Read, Glob, git log and status, date)</td>
+<td>71,301 = 33.2% of all model outputs, 26.9% of context tokens</td>
+</tr>
+<tr>
+<td>mean model latency to produce a read-only call</td>
+<td>11.2 s; 220.7 hours over 14 days, 15.8 h a day across the fleet</td>
+</tr>
+<tr>
+<td>harness ceremony calls (sweep_log 1,298, readability 920, report build 902, session_tree 725, codex 724, pr_ready 546, decisions 488, recall 407, automations 388, task_board 385, qtail 381, close 249 ...)</td>
+<td>8,515 = 4.0% of outputs, 4.6% of context tokens</td>
+</tr>
+<tr>
+<td>identical command re-run inside one session</td>
+<td>date and now.py 1,504 extra runs; the same close, sweep and sweep-help commands re-run in 20+ sessions</td>
+</tr>
+<tr>
+<td>the same skill file read with cat</td>
+<td>daily-script.md in 47 transcripts</td>
+</tr>
+<tr>
+<td>shell segments that only shape output</td>
+<td>grep 53,540, head 49,394, echo 34,908, cut 33,549, tail 32,954</td>
+</tr>
+<tr>
+<td>read-only chains before a write</td>
+<td>14,865 of length 1, 4,857 of 2, 1,763 of 3, 801 of 12 or more</td>
+</tr>
+<tr>
+<td>scratch helpers rewritten per session</td>
+<td>story.json 52 writes in 35 transcripts, pr_body 25, judge rubrics about 90, ctx.py 15, add_ptr 13, mem_trim and trim_memory 13, fix.py to fix4.py 22, html2txt 6</td>
+</tr>
+<tr>
+<td>spawns</td>
+<td>2,911; 1,426 (49%) prompts shaped as inventory, count, list or grep; visual-judge 919 of which 429 at the parent's model</td>
+</tr>
+<tr>
+<td>gate refusals</td>
+<td>6,031; 1,193 retried near-identical; shell cluster (heredoc 1,527, shell 668, inline-escape 271, live-edit 210, backtick 35) = 2,711 = 45%</td>
+</tr>
+<tr>
+<td>waiting by polling</td>
+<td>Monitor 560, ScheduleWakeup 524, TaskStop 383, 1,503 sleep segments, "until grep ... sleep" loops</td>
+</tr>
+<tr>
+<td>session openings</td>
+<td>198 transcripts start with five repo file reads, 94 with an ops read then four report reads, 77 with five report reads (REPORTS FIRST done by the model, file by file)</td>
+</tr>
+<tr>
+<td>tool results</td>
+<td>Bash 124.6 million chars, Read 79.7 million, in 14 days</td>
+</tr>
+</tbody>
+</table></div>
+<p>Full history, 5,472 transcript files (926 sessions): 394,181 tool calls; inspection calls 141,826 = 29.3% of outputs, 22.9% of context tokens, 379.5 hours of model latency; ceremony 12,852 = 2.7%; refusals 10,843 (heredoc 3,166, shell 1,386, long-proof 1,291, inline-escape 505, live-edit 481), 2,030 retried near-identical; 2,171 of 4,824 spawns shaped as deterministic collection [MEASURED]. The 14-day shares are higher than the all-time ones on every line: the harness's own overhead is growing, not shrinking.</p>
+<h3 id="72-the-de-agenting-classes-and-their-mechanism-inference-on-71-each-is-a-pilot-with-a-beforeafter">7.2 The de-agenting classes and their mechanism [INFERENCE on 7.1; each is a pilot with a before/after]</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Today</th>
+<th>Replacement without inference</th>
+<th>Accuracy guard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1 the clock</td>
+<td>1,504 identical date calls; a gate (belgrade-time, 163 refusals) that forces a script</td>
+<td>UserPromptSubmit and PostToolUse inject the local time; the statusline shows it</td>
+<td>none needed</td>
+</tr>
+<tr>
+<td>D2 session opening</td>
+<td>5 file reads per session by the model (reports, devhistory, peers)</td>
+<td>SessionStart injects a 2-3 KB pack: devhistory head, open rows, peers, index of the 5 most relevant reports with their verdict lines; full reads only on demand</td>
+<td>the pack cites its files; a wrong index entry is a visible defect, not a silent one</td>
+</tr>
+<tr>
+<td>D3 ceremonies</td>
+<td>8,515 calls across 12 scripts, each a model turn, often re-run with a different tail -N</td>
+<td>one <code>close</code> command (report build, readability, sweep entry, todo sweep, self close) and one <code>codify</code> command (memory note, index pointer, sweep entry, devhistory) run by a Stop or SessionEnd hook from a small JSON the model writes once</td>
+<td>the hook reports what it did; the model reviews one summary instead of running five scripts</td>
+</tr>
+<tr>
+<td>D4 shell-fix loop</td>
+<td>2,711 refusals a fortnight for heredocs, sed on ops paths, backslashes, each retried</td>
+<td>PreToolUse <code>updatedInput</code> rewrites the heredoc body to a script file and runs the file; sed on an ops path becomes an Edit hint</td>
+<td>the rewritten command is logged beside the original; a diff mismatch denies</td>
+</tr>
+<tr>
+<td>D5 output shaping</td>
+<td>170 thousand head/cut/tail/grep segments typed to protect context</td>
+<td>a result trimmer with sane defaults (first and last 60 lines, byte cap, saved full output path), the agent asks for more by path</td>
+<td>full output always on disk</td>
+</tr>
+<tr>
+<td>D6 scratch helpers</td>
+<td>250+ rewrites of the same ten scripts</td>
+<td>a <code>mind/lib</code> of standard helpers (html2txt, add_ptr, patch, judge rubric, story fill, trim memory) on the path</td>
+<td>each helper has tests; the model stops writing its own</td>
+</tr>
+<tr>
+<td>D7 deterministic spawns</td>
+<td>1,426 spawns whose prompt is a count, list or grep</td>
+<td>scripts (surface_audit.py, bb_inventory.py pattern) run by the main loop or a hook</td>
+<td>spawn only when judgment is in the prompt</td>
+</tr>
+<tr>
+<td>D8 waiting</td>
+<td>Monitor, wake-ups, sleep loops, poll re-runs</td>
+<td>notify_when_idle, task notifications and hook wake-ups already exist natively; the law "a long proof runs in the background" plus a <code>wait_for</code> helper</td>
+<td>none</td>
+</tr>
+<tr>
+<td>D9 inspection chains</td>
+<td>801 chains of 12+ read-only calls before a write</td>
+<td>a <code>context pack</code> call per task type (pulse, pr, report) that returns the N facts in one result</td>
+<td>pack contents are files, not summaries</td>
+</tr>
+<tr>
+<td>D10 codify and index</td>
+<td>memory note + MEMORY.md edit + sweep entry + devhistory by hand, 4 turns</td>
+<td>the D3 codify command</td>
+<td>a dry-run shows the four writes</td>
+</tr>
+</tbody>
+</table></div>
+<p>Prize, upper bounds from 7.1 [INFERENCE]: a third of model outputs and about a quarter of context tokens are inspection; de-agenting D1, D3, D4, D7 and D10 alone removes about 18,000 calls in 14 days (1,504 + 8,515 + 2,711 + 1,426 + about 4,000) = 10 percent of all calls, each a turn of 11-13 s and about 300 thousand tokens of context. Target for the first month: inspection share from 33 percent to under 20, ceremony share from 4 to under 1, shell refusals from 2,711 to under 300.</p>
+<p>The RSI generalization (Ivo: "this is just one example of many"): de-agenting is one standing inference class of the Mind. The others named today: tool fitness (is each bb tool still the best thing), law truth (is each law still true against its sources), gate yield (does each gate still earn its deny), prefix weight (what is paid every turn for nothing), cache hygiene (what busts the cache), wait (what the agent waits on). Each is a nightly query over the ledger with a threshold and a rung; the teacher adds a class when a recurring cost has no owner.</p>
+<h2 id="8-setup-tokens-for-the-rotating-seats-read-unless-marked">8. Setup tokens for the rotating seats [READ unless marked]</h2>
+<p>Facts from https://code.claude.com/docs/en/authentication.md, cli-reference.md, remote-control.md, github-actions.md, changelog.md (all 200):
+- <code>claude setup-token</code>: "Generate a long-lived OAuth token for CI and scripts. Prints the token to the terminal without saving it. Requires a Claude subscription." It is "a one-year OAuth token"; "set it as the CLAUDE_CODE_OAUTH_TOKEN environment variable"; plans: "requires a Pro, Max, Team, or Enterprise plan".
+- Precedence: cloud credentials, then ANTHROPIC_AUTH_TOKEN, ANTHROPIC_API_KEY, apiKeyHelper, then CLAUDE_CODE_OAUTH_TOKEN, then profile credentials, then "Subscription OAuth credentials from /login". A /login inside a session switches that session; new sessions read the variable again.
+- Limits: "It can only make model requests, so it can't establish Remote Control sessions or fetch claude.ai connectors. MCP servers you configure locally still work." Remote Control: "These tokens can only make model requests, so they can't establish Remote Control sessions."
+- Bare mode does not read the variable. Changelog: v2.1.225 fixed a transient 401 replacing the long-lived token with a stored login's short-lived one; v2.1.118 and v2.1.117 fixed /login having no effect with the variable set.
+- NOT DOCUMENTED: whether a new setup token revokes the previous one; how to revoke one; whether its use counts against the seat's usage limits (our pool reads the 5-hour and 7-day numbers from the rate-limit headers of a one-token call, so in practice it does [MEASURED, ClaudePool.psm1 2026-10-01 note]); the seat-sharing policy (Terms pages not read; the Seat Facts report of 1 Oct read them: Consumer Terms forbid sharing a Max plan, Commercial Terms let one user's breach suspend the company).</p>
+<p>What the pool already has [MEASURED, ClaudePool.psm1]: <code>Add-ClaudeTokenAccount</code> (a setup-token seat, source 'setup-token', expiry +365 days, no refresh token, read interactively so it never lands in shell history), <code>Test-SetupTokenAccount</code> (the watcher never overwrites its snapshot), a usage reader that falls back to rate-limit headers when /usage answers 403 for an inference-only token, and one live example: the agent seat, scope inference-only, valid to about a year out. The six other seats are /login seats whose access tokens expire daily and whose refresh is the source of the revoke-on-refresh incidents (P06, 201 lessons; the ⛔ law of 15 Sep).</p>
+<p>Transition, in order [INFERENCE]:
+1. Ivo mints one setup token per rotating seat: seat A, seat B, marketing, seat D, seat E (5 browser approvals, about ten minutes). ivo.petrovic stays on /login: it carries Remote Control and the claude.ai connectors (Claude Docs, Searchable), which a setup token cannot reach.
+2. Each token goes in through <code>Add-ClaudeTokenAccount -FromFile</code> (never pasted into a shell line); the file is deleted after import.
+3. The launcher and session_tree pass <code>CLAUDE_CODE_OAUTH_TOKEN</code> per child from the chosen seat instead of the custom bearer header; the rotator's refresh watcher, the T-90-minute renewal and the <code>.oauth_refresh.lock</code> path are skipped for source 'setup-token' seats (the code paths exist; a test proves each).
+4. Proof before cutover: a child session on a setup-token seat makes a model call; its 5-hour and 7-day usage reads from the headers; Remote Control still starts on the /login seat; a claude.ai connector call still works on the /login seat; a cloud-router child still runs.
+5. Retire for those seats: refresh handling, 401-storm handling, revoke incidents; add one automation that warns 30 days before each token's expiry (the agent seat  on 2027-09-01).
+6. Rotation policy: switch seats only at a session boundary; a mid-session bearer change rewrites the cache (58 busts, 20.9 million tokens on 20 Oct), and the token type does not change that.</p>
+<p>Decision for Ivo (section 13, item 2), recommendation: do it this week for the five rotating seats; the policy exposure of automating on company seats is unchanged by the token type, and the daily refresh is the part that keeps breaking.</p>
+<h2 id="9-the-mind-design-inference-unless-marked">9. The Mind: design [INFERENCE unless marked]</h2>
+<p>Principles taken from the sources: the simplest thing that works, complexity only when measured [READ, building-effective-agents]; every harness part encodes an assumption about what the model cannot do, so each part is tested for whether it is still needed [READ, harness-design]; evals of 20 to 50 tasks drawn from real failures, both when a behaviour should occur and when it should not [READ, evals essay]; an archive of past results read by later attempts, natural-language reflection, and an empirical check before a change is kept [READ abstracts of DGM, SICA, GEPA, Reflexion, ACE; the cross-paper synthesis is INFERENCE]; incremental deltas instead of whole-file rewrites to avoid brevity bias and context collapse [READ, ACE abstract].</p>
+<h3 id="91-parts">9.1 Parts</h3>
+<ol>
+<li>Ledger. One SQLite file, write-ahead log, fsync: tables for sessions, spawns, tool calls (summary), gate verdicts, tasks, decisions, promises, lessons, changes, measurements. Writers: one PostToolUse hook, one Stop hook, the launcher, the teacher. Today's eight stores (task board, decisions, promises, attention, session tree, automations history, sweep entries, asks ledger) become views on it. Native OpenTelemetry events [READ, monitoring-usage.md] feed the same file through a local collector.</li>
+<li>Scoreboard. One page a day, one row per area: prefix tokens per first request, hook wait p50 and p90 per event, hooks killed, refusals and override rate per gate, spawn refusals, cache-bust tokens, tokens per day, inspection share, ceremony share, corrections per 100 prompts, verified-done rows per attention hour. The ratchet generalised: a ceiling per row that only falls; a break is a ledger event the loop picks up.</li>
+<li>Codify loop, automatic. Detect (correction turns, deny-then-override, the same tool error twice, rework within 24 hours, ratchet breaks) → cluster (attach to one of the 18 roots before creating a new one) → root cause (name the generator: tool, template, default, brief) → land on the lowest rung that works (fix the generator; change the interface so the error cannot be expressed; add a test; add advice; deny last; a prose law only for judgment no code can hold) → gate lifecycle (shadow 7 days or 50 would-deny events, precision at least 95 percent on a labelled sample, both-way fixtures in CI, p90 under 50 ms, demotion to shadow above a 5 percent override rate, retirement after 30 days of zero true denies, a law never cited in 60 days to the archive) → memory and ledger. Ivo approves only consent, money, send, credential and seal gates, promotions from shadow to deny, and a weekly one-screen harness diff. [SIMULATED H3 adopted as the design; its thresholds are starting values to be measured.]</li>
+<li>One dispatch. One resident process per event type with the gates imported once (no per-gate interpreter start), lanes in parallel as the product does [READ, hooks.md], a 50 ms p90 budget per gate, and the repo hooks moved under the same dispatcher so no hook can time out silently. The first act is to remove the four hooks of section 0 item 1.</li>
+<li>Law store in layers. L0, the prefix: identity, the 13 stop-sign laws, the router, under 12 thousand characters. L1, area laws in files loaded by path or tool (laws/, .claude/rules), each with a "last cited" stamp. L2, gates as code with tests and lifecycle. L3, memory and the ledger. Per-prompt injections (the graph reminder is about 10 KB on every prompt, at the hook output cap of 10,000 characters [READ]) are sent once per session and again only when their content changes.</li>
+<li>De-agenting layer: section 7.2, D1 to D10, built as hooks and a helper library.</li>
+<li>Standing inference classes: section 7, last paragraph; each a nightly query with a threshold, an owner rung and a scoreboard row.</li>
+<li>Teacher and writer: the proposal engine of the loop; proposals carry ledger evidence; generator fixes and retirements ship behind tests without asking; everything else waits for the weekly diff.</li>
+</ol>
+<h3 id="92-what-stays-as-it-is">9.2 What stays as it is</h3>
+<p>The consent boundary, the work/private seal, secret intake, the model floor, probe-before-claim, long proofs in the background, one wave per seat, the research law, the report kit as the one generator, Codex as the second family.</p>
+<h2 id="10-targets-baseline-to-2x-measured-baselines-targets-inference">10. Targets: baseline to 2x [MEASURED baselines; targets INFERENCE]</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Baseline</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>prefix per first request</td>
+<td>136,561 tokens</td>
+<td>under 70,000</td>
+</tr>
+<tr>
+<td>context per call (this session)</td>
+<td>277,640 tokens mean</td>
+<td>under 150,000</td>
+</tr>
+<tr>
+<td>hook wait per day (fleet)</td>
+<td>62.9 min (24 h); 68.2 h per 7 days before the fixes</td>
+<td>under 30 min; 0 hooks killed</td>
+</tr>
+<tr>
+<td>PreToolUse wall (dispatch.log)</td>
+<td>p50 292 ms, p90 1,110</td>
+<td>p50 150, p90 500</td>
+</tr>
+<tr>
+<td>Stop wall</td>
+<td>p90 2,596 ms</td>
+<td>p90 1,200</td>
+</tr>
+<tr>
+<td>SessionStart</td>
+<td>p90 8.9 s</td>
+<td>p90 4.5 s</td>
+</tr>
+<tr>
+<td>spawn refusals</td>
+<td>16.5%</td>
+<td>under 5%</td>
+</tr>
+<tr>
+<td>gate refusals per 14 days</td>
+<td>6,031</td>
+<td>under 3,000, then 1,500</td>
+</tr>
+<tr>
+<td>inspection share of outputs</td>
+<td>33.2%</td>
+<td>under 16%</td>
+</tr>
+<tr>
+<td>ceremony share</td>
+<td>4.0%</td>
+<td>under 1%</td>
+</tr>
+<tr>
+<td>identical date calls</td>
+<td>1,500 per 14 days</td>
+<td>0</td>
+</tr>
+<tr>
+<td>cache-bust tokens per day</td>
+<td>42.7 million</td>
+<td>under 20 million</td>
+</tr>
+<tr>
+<td>tokens per day (fleet)</td>
+<td>5.2 billion</td>
+<td>under 2.6 billion</td>
+</tr>
+<tr>
+<td>lessons landing only in memory</td>
+<td>1,789 of 7,266</td>
+<td>under 500</td>
+</tr>
+<tr>
+<td>teacher proposals acted on</td>
+<td>5 acted on, 23 made</td>
+<td>over half, generator fixes automatic</td>
+</tr>
+<tr>
+<td>corrections per 100 prompts</td>
+<td>to be measured in week 1</td>
+<td>half</td>
+</tr>
+<tr>
+<td>verified-done rows per attention hour</td>
+<td>to be measured in week 1</td>
+<td>double</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="11-migration-staged-nothing-dropped-inference">11. Migration, staged, nothing dropped [INFERENCE]</h2>
+<p>Every stage: baseline row on the scoreboard before, after a week after; a capability checklist (every current function, pass or fail, before and after); rollback is a git revert in the harness repo plus a settings snapshot; a stage that adds wait or loses a function is reverted that day.
+- S0 (week 1): freeze the baseline; stand up the scoreboard from dispatch.log, session_cost and the miner; measure the two human metrics for the first time.
+- S1 (week 1-2): remove the four dead hooks; D1 clock injection; D4 heredoc rewrite; D3 close and codify commands; floors by construction in the lane files.
+- S2 (week 2-3): the ledger; task board, decisions, promises, attention, sweep entries as views; old files kept as mirrors for two weeks.
+- S3 (week 3-4): law store layers; prefix split with a measured no-loss test (the Instruction File Optimization recipe); per-prompt delta injections.
+- S4 (week 4-6): gate lifecycle in shadow mode for every gate; the codify loop end to end; teacher auto-apply for generator fixes.
+- S5 (week 6-8): bb folds (session-tree onto native background sessions, session-name retired, control-center split, queue and promise folds); setup tokens as section 8 once Ivo mints them (can run in week 1 independently).</p>
+<h2 id="12-sources-denominators-verification">12. Sources, denominators, verification</h2>
+<p>Enumerated and read: code.claude.com llms.txt 239 URLs (about 50 fetched by readers and verifiers); platform llms.txt 813 URLs; anthropic.com sitemap 569 URLs (news 275, research 201, 24 engineering essays; 6 essays read); Claude Code changelog 426 versions (2.1.286 to 2.1.306 read in full); ClaudeDevs store 166 posts, 134 keyword hits; 40 researchers sought, 21 found, 8 self-improvement papers read as abstracts; local: 48,182 dispatch events, 3,408 transcripts in 7 days, 2,846 transcript files in 14 days and 5,468 in all, 7,266 lessons, 11 earlier reports, the bb research cache (713 features). A Haiku verifier then checked 31 numbers of this plan against the measurement files and found 3 slips (gate registrations, the date-call sum, the memory-only sum), corrected above. Adversarial pass: 27 claims re-fetched, 23 confirmed, 3 different in a detail (timed-out hooks block only on PreToolUse exceptions; the agent-view page says shutdown, not restart; a cloud session cannot answer a message from another machine, narrower than "cannot send"), 1 not found (the "anti-pattern" quote; corrected in section 5). Second-family judge (GPT-6 Astra, ultra, 461 s) on the draft law table: score 4 of 10, 24 findings; the three it called load-bearing: the hook-timeout row (did not survive as drafted: a kill count is not "never judged", a median is not "per call"; reworded in sections 0 and 3.1), the cache row (did not survive: block invalidation is not a proven whole-prefix rewrite; the plan now cites only the measured bust tokens), and the "-p is never a session" row (survives). Every finding was applied to section 5 or the number was removed.
+Covered since the first draft: the official pages of the 14 outside alternatives (section 6.4) and the Workflow cap (section 5), both fetched or measured on 21 Oct. The personal profile is sealed by law and was not read.</p>
+<h3 id="121-open-questions-each-with-an-owner-and-a-date">12.1 Open questions, each with an owner and a date</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Owner</th>
+<th>By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>14 native-doc pages still to read (checkpointing, workflows, interactive mode, memory details, costs, sessions and 8 more from the fetched index)</td>
+<td>S0 session, a Haiku reading wave on its first day</td>
+<td>2026-10-28</td>
+</tr>
+<tr>
+<td>Terms of Service: whether a setup token on a rotating seat sits within the plan terms</td>
+<td>the S1 session reads the terms page before any import; feeds Blocked-on-Ivo item 2</td>
+<td>2026-10-28</td>
+</tr>
+<tr>
+<td>The 19 law files, 29 skills, 27 plugins, 40 repo hooks and 9 lanes, judged only in aggregate</td>
+<td>S3 session (law store), one coverage row per file on the scoreboard</td>
+<td>2026-11-11</td>
+</tr>
+<tr>
+<td>The all-time miner read 5,472 transcript files for shares only; rework and correction turns are not yet classed</td>
+<td>S0 session, the scoreboard's first week</td>
+<td>2026-10-28</td>
+</tr>
+<tr>
+<td>The two human metrics (verified-done rows per attention hour, corrections per 100 prompts) have no baseline</td>
+<td>S0 session, measured for two weeks before any target</td>
+<td>2026-11-04</td>
+</tr>
+<tr>
+<td>Temporal as the engine under the ledger and the queue</td>
+<td>S5 session, a one-week spike against native background sessions</td>
+<td>2026-12-05</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="13-blocked-on-me-changed-found">13. Blocked on me, Changed, Found</h2>
+<p>Blocked on Ivo (each with the recommendation, and what happens on each answer):
+1. Approve the plan and the stage order. Recommended: yes, S0 and S1 this week. On yes: the Orchestrator opens one session per stage with this plan as the brief. On no: name the stage to change.
+2. Setup tokens: mint 5 (seat A, seat B, marketing, seat D, seat E), keep ivo.petrovic on /login. Recommended: yes, this week; the token type does not change the policy exposure, and the daily refresh is what breaks. On yes: the five browser approvals are his; the import and the pool change are ours with the proofs of section 8 step 4. On no: the refresh machinery stays and P06 keeps its 201 lessons.
+3. Gate lifecycle: let the loop demote any gate above a 5 percent override rate to shadow without asking, except consent, money, send, credential and seal gates. Recommended: yes.
+4. Prefix: move the pool and seat bullets (about 20) and the comms detail out of L0 into L1 files, with the measured no-loss test. Recommended: yes.
+5. The headline metric for "doubled": verified-done rows per attention hour, with corrections per 100 prompts beside it. Recommended: yes, baseline for two weeks first.
+6. Cloud credit: $8.79 left on seat C (the credit payer), expiring 5 Nov. Recommended: renew if the cloud lane keeps its measured 40-unit batches under $2; otherwise the lane idles and work routes to the seats.</p>
+<p>Changed this session (Ivo's two codify orders; everything else untouched):
+- memory: feedback_full_research_unprompted_scope_is_implied.md, feedback_deagenting_and_self_inferred_upgrade_classes.md, feedback_bb_is_harness_rsi_may_replace_it.md, pointers in MEMORY.md.
+- ~/.claude/CLAUDE.md research bullet: "set AND SCOPE IMPLIED ... enumerate the full surface, coverage per part, counted-only = miss" (file 45,048 to 45,041 chars).
+- ~/.claude/ops/research-gate/research_gate.py: the gate text names the scope rule; its 7 tests pass; syntax checked.</p>
+<p>Found, not fixed (not this session's scope):
+- GIT-SYNC LOCK-CONFLICT: the Miras git-sync did not start; the single-instance lock is held by pid 24816 for over 40 minutes; the alarm fires on every prompt.
+- 429 visual-judge spawns in 14 days ran at the parent's model, against the floor law.
+- The instruction-shape gate refuses any growth of CLAUDE.md because the file is already over its 45,000-character ceiling; every amendment must be net negative.
+- The pool's the agent seat  seat already runs on a setup token with inference-only scope; the pool code supports the transition and nobody had used it for the rotating seats.
+- Cloud credit on both seats runs out on 5 Nov; seat C (the credit payer) has $8.79.</p>
+</main>
+</body>
+</html>
