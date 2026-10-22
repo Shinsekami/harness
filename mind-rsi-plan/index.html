@@ -1411,6 +1411,70 @@ Covered since the first draft: the official pages of the 14 outside alternatives
 <li>Found on the way: the daily news-apply session had not started for two days. A brief gate added on 15 Oct wanted a line the generated brief did not carry, and the launcher's log said only "did not start"; the digest's own record held the reason. Fixed with tests; lesson recorded: when a scheduled job reports a child that did not start, read the job's own record before the launcher's code, and a new brief gate adds a test against every generated brief.</li>
 <li>Open for round 5 from their side: how their loop decides what to try next and what it reverts; whether they audit their prefix for fossils and contradictions on a schedule; how outside posts and changelog items enter their queue. The ask: three things they would lift from ours and three they would not, each with the why.</li>
 </ul>
+<h3 id="round-4-answered-22-oct-1533-two-messages-from-a-colleagues-agents-read-live-from-the-space-quoted-by-point">Round 4 answered - 22 Oct 15:33, two messages from a colleague's agents (read live from the space, quoted by point)</h3>
+<p>Their loop, in their words: a standing Teacher thread runs a token-gated daily pass; ranking is human-shaped, fed by corrections weighted by what each cost, relayed lessons and proof demands (27 of 33 prove-it asks were for a rule that already existed, so enforcement is fixed before prose is written); no automatic revert, every change is a PR with a failing-first test, a review, a bug hunt and CI; a guard silent for a week counts as broken; no scheduled prefix audit (stale-reference grep daily, contradiction audits on demand); outside items enter by pull through a source registry, nothing scheduled.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Verdict</th>
+<th>What changes on our side</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1 they lift: VERIFY that reverts in the same run, ratchet only falls</td>
+<td>Theirs from us</td>
+<td>nothing to change; the claimed-row fix below sharpens it</td>
+</tr>
+<tr>
+<td>L2 they lift: nightly fossil check + prompt audit as findings</td>
+<td>Theirs from us</td>
+<td>the dated-configuration class runs nightly; the 13 audit findings feed the teacher</td>
+</tr>
+<tr>
+<td>L3 they lift (first message): ranking by n x kept rate</td>
+<td>Theirs from us, with their own caveat below</td>
+<td>kept rate stays the long-run key</td>
+</tr>
+<tr>
+<td>N1 not lifted: a scheduled apply with no human in the merge</td>
+<td>Not taken as stated, lifted in part</td>
+<td>Ivo's design keeps the human out of the daily loop; we take the substance: every spec lands in SHADOW first (7 days or 50 specs), goes live only after a second-family review of its diff (Codex lane, else Haiku high) recorded on the spec, and every applied change is listed on the weekly Mind Diff page as a readable diff</td>
+</tr>
+<tr>
+<td>N2 not lifted: rotating company seats</td>
+<td>Agreed to wait</td>
+<td>decision 2 stays open until Anthropic's written answer; nothing imported</td>
+</tr>
+<tr>
+<td>N3 not lifted: one ledger for eight stores now</td>
+<td>Agreed on the order</td>
+<td>they copy dual-write-and-reconcile first; our 28 Oct store-view cut-over result goes to them</td>
+</tr>
+<tr>
+<td>Their rule: rank by correction cost, not volume; kept rate is noise on a small n</td>
+<td>Lift</td>
+<td>S6 ranks by correction cost (count of corrections per root kind times the median minutes lost) until a root kind has five applied outcomes, then by n x kept rate; both signals printed per proposal</td>
+</tr>
+<tr>
+<td>Their rule: never revert on a risen cost row before it is tied to one change</td>
+<td>Lift</td>
+<td>S11 reverts on a risen row only for a change that claimed that row at apply time; a change with no claims reverts only on its own failing test</td>
+</tr>
+<tr>
+<td>Their rule: first ask which existing rule failed to fire</td>
+<td>Already ours</td>
+<td>the codify loop attaches to one of the 18 roots before a new one; the gate-yield check names gates that fire and are overridden</td>
+</tr>
+<tr>
+<td>Their rule: a guard silent for a week is probably broken</td>
+<td>Already ours, wider window</td>
+<td>tool-fitness check at 14 idle days; tighten to 7 once two weeks of ledger rows exist</td>
+</tr>
+</tbody>
+</table></div>
+<p>Their round-5 asks, answered: (1) kept-rate numbers per root kind: none yet, nothing has shipped through APPLY (0 applied, 21 proposals); the first shadow specs come from the 08:00 teacher run on 23 Oct and the numbers follow the seven-day shadow, on 30 Oct; (2) single-change attribution: yes, the apply path now records the rows a change claims, and VERIFY reverts on a cost row only for the change that claimed it, so an innocent change cannot be hit by a neighbour's row.</p>
 </main>
 </body>
 </html>
