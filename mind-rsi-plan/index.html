@@ -42,7 +42,7 @@ a{color:var(--accent)}.toc{font-size:14px;columns:2;column-gap:2em}.toc ul{paddi
 <li>Split the prefix into layers: L0 under 12 thousand characters, area rules loaded by path, per-prompt injections sent only when they change [INFERENCE on the measured 136,561-token first request].</li>
 <li>One ledger (SQLite, write-ahead log, fsync) replaces the eight state stores that today answer "what is open and who waits on whom" [MEASURED inventory, section 6].</li>
 <li>A gate lifecycle: shadow for 7 days or 50 would-deny events, at least 95 percent labelled precision, p90 under 50 ms, demotion to shadow when the labelled precision falls under the floor, retirement after 30 days of zero true denies [SIMULATED H3, adopted as the design; numbers are starting values to be measured]. The override rate is a review signal, never the demotion key: overrides partly measure agent impatience, so keying on them demotes the most-bypassed gates first (round 1 with a colleague's agent, section 14).</li>
-<li>The codify loop becomes automatic: detect from transcripts, cluster into the 18 patterns, name the generator, land on the lowest rung (fix the generator, change the interface, add a test, add advice, deny last, a prose law only for judgment no code can hold).</li>
+<li>The codify loop becomes automatic: detect from transcripts, cluster into the 18 patterns, name the producing code, land on the lowest rung that holds: first mend the code itself, then reshape the interface, then a test, then advice, a deny only after those, and a written law solely where judgment is needed and no code can carry it.</li>
 <li>Setup tokens for the five rotating seats; the owner seat stays on /login for Remote Control and claude.ai connectors [READ, section 8].</li>
 <li>Spawns at their floor by construction: 429 visual-judge spawns in 14 days ran off their lane [MEASURED; corrected by the S1 stage on 21 Oct: 404 were explicit Opus overrides in the calling prompt, the 25 with no model took the lane's pin]; the effort and model become part of the lane file, not the prompt, and the spawn guard pins an unpinned generic spawn in code (<code>updatedInput</code>) instead of refusing it, one turn saved per spawn (round 1, section 14).</li>
 <li>A standard helper library instead of per-session scratch scripts: story.json written 52 times, judge rubrics about 90 times, memory-trim and pointer scripts rewritten in 20 sessions [MEASURED].</li>
@@ -362,7 +362,7 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 <td>7.0%</td>
 <td>gate 257, tool 167</td>
 <td>wrong output 297, lost work 49</td>
-<td>a test on the generator first; a gate only when the generator cannot be fixed; recurrence visible in the ledger</td>
+<td>a test on the producing code first; a gate only when that code cannot be fixed; recurrence visible in the ledger</td>
 </tr>
 <tr>
 <td>P18 session orchestration</td>
@@ -831,8 +831,8 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 </tr>
 <tr>
 <td>session-tree</td>
-<td>fold onto native background sessions</td>
-<td><code>--bg</code>, <code>claude agents</code>, <code>notify_when_idle</code> cover spawn, wait and remove; keep the receipt row and the effort pin</td>
+<td>fold onto native background sessions; re-judged by S5: already done, its store folds into the ledger</td>
+<td>session_tree.py already spawns native background sessions with a name, lists them with <code>claude agents --json --all</code> and removes them with <code>claude rm</code> (lines 2, 814, 1148); the receipt row and the effort pin stay; its 891-row store is the session-tree fold</td>
 </tr>
 <tr>
 <td>session-launcher</td>
@@ -841,8 +841,8 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 </tr>
 <tr>
 <td>queue-watch</td>
-<td>fold into ledger + automations</td>
-<td>34 lines</td>
+<td>re-judged by S5: keep as is</td>
+<td>34 lines and 0 state rows: a README and a transcript-tail reader (qtail.py), no store to fold</td>
 </tr>
 <tr>
 <td>recall</td>
@@ -852,7 +852,7 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 <tr>
 <td>automations</td>
 <td>keep; audit yield per job</td>
-<td>103 jobs, 184 scheduled tasks; native scheduling is session-bound or cloud-only</td>
+<td>106 jobs, 134 scheduler tasks of ours (427 on the machine), re-measured by S5; native scheduling is session-bound or cloud-only; yield audit: 86 keep, 20 retire candidates</td>
 </tr>
 <tr>
 <td>secret-intake</td>
@@ -872,7 +872,7 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 <tr>
 <td>control-center</td>
 <td>split</td>
-<td>37k lines; keep sampler and teacher, panels read the ledger</td>
+<td>31,452 lines in 60 source files (S5 count, tests and backups out); keep sampler and teacher; 4 readers of the mirrored stores (decisions.py, feed.py, tasks_view.py, teacher.py) switch to the views at the cut-over</td>
 </tr>
 <tr>
 <td>chat-watch</td>
@@ -896,13 +896,13 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 </tr>
 <tr>
 <td>standing-orders</td>
-<td>keep inside the dispatch</td>
-<td>delta injection only</td>
+<td>keep inside the dispatch; S5: already done</td>
+<td>runs inside ups_dispatch.py from the manifest and injects only on news or drift (REINJECT_EVERY 8, REINJECT_BYTES 400 KB)</td>
 </tr>
 <tr>
 <td>session-name</td>
-<td>retire</td>
-<td>native <code>--name</code> and <code>/rename</code>; keep the style check</td>
+<td>re-judged by S5: keep, it is the style hook</td>
+<td>native <code>--name</code> names a session at launch only and a model cannot type <code>/rename</code>; session_name.py already renames through the hook's <code>sessionTitle</code>, the same path as /rename; 470 lines, 161 rows</td>
 </tr>
 <tr>
 <td>session-report</td>
@@ -924,13 +924,16 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 <td>keep; teacher becomes the proposal engine</td>
 <td>23 proposals made, 5 acted on</td>
 </tr>
-<tr>
-<td>## 7. De-agenting: the plan, from the sessions on disk</td>
-<td></td>
-<td></td>
-</tr>
 </tbody>
 </table></div>
+<h4 id="s5-execution-21-oct-that-session">S5 execution, 21 Oct (that session)</h4>
+<ul>
+<li>Ledger views built (<code>ledger/views.py</code>): each of the 8 stores read back from the ledger equals its files on every record; a store rebuilt from the ledger alone reads back equal on all 8 (content equality: the ledger sorts payload keys, so a retired file's exact bytes stay in its <code>_attic</code> copy).</li>
+<li>Deletes now reach the ledger as tombstones (<code>ledger_mirror.tombstone</code>); <code>automations remove</code> writes them before it deletes a history file. Before this, the first removed job would have stopped the 7-day count for good.</li>
+<li>The fold registry and retire gate (<code>ledger/folds.py</code>) hold all 8 folds: reconcile 1 of 7 clean days, view 1 of 7, the thin-view window ends 4 Nov, and 0 of 52 old-tool functions pass on a view yet. A retire moves files to <code>_attic/</code> with the harness commit, never deletes. The ledger keeper records the daily view check.</li>
+<li>codify-gate: the replacement waits on the automatic codify loop (9.1.3), which is not built yet. The codify count is now a scoreboard row; the baseline is 75 notes landed in code, a law or a rule in 24 h (330 in 7 d).</li>
+</ul>
+<h2 id="7-de-agenting-the-plan-from-the-sessions-on-disk">7. De-agenting: the plan, from the sessions on disk</h2>
 <p>Definition (Ivo, 21 Oct): remove inference where it is superfluous; what is a deterministic tool call becomes a script or a hook, never where accuracy drops.</p>
 <h3 id="71-statistics-14-days-2846-transcripts-346-sessions-2500-subagent-measured-deagent_minerpy-no-model-calls">7.1 Statistics, 14 days, 2,846 transcripts (346 sessions, 2,500 subagent) [MEASURED, deagent_miner.py, no model calls]</h3>
 <p>Caveat: Claude Code writes each content block as its own record, so "turn" here means one tool call or one text block; token sums repeat a response's usage across its blocks and overstate absolutes by about a quarter against session_cost (67 billion here against about 52 billion scaled from the 7-day total). Shares and counts are what to read.</p>
@@ -1098,7 +1101,7 @@ Refusal then retry, 198 transcripts of 7 days: 3,221 refusals, 2,983 override to
 <ol>
 <li>Ledger. One SQLite file, write-ahead log, fsync: tables for sessions, spawns, tool calls (summary), gate verdicts, tasks, decisions, promises, lessons, changes, measurements. Writers: one PostToolUse hook, one Stop hook, the launcher, the teacher. Today's eight stores (the task board, the decisions pool, the promises ledger, the attention list, the session tree, the automations history, the sweep entries, the asks ledger) become views on it. Native OpenTelemetry events [READ, monitoring-usage.md] feed the same file through a local collector. Write protocol (round 1, section 14): every event carries a ULID id and the writer's session id; writes are idempotent (an insert whose id exists is ignored, so a hook firing twice leaves one row); a versions table carries forward-only migrations; the eight stores stay as mirrors for two weeks while a reconciliation runs each night, comparing ids and counts in both directions, and the cut-over needs seven days of zero diff.</li>
 <li>Scoreboard. One page a day, one row per area: prefix tokens per first request as a spread by toolset and cache state (median and p90 per cell, never one number), hook wait p50 and p90 per event, hooks killed, refusals and override rate per gate, spawn refusals, cache-bust tokens, tokens per day, inspection share, ceremony share, corrections per 100 prompts, verified-done rows per attention hour. The ratchet generalised: a ceiling per row that only falls; a break is a ledger event the loop picks up.</li>
-<li>Codify loop, automatic. Detect (correction turns, deny-then-override, the same tool error twice, rework within 24 hours, ratchet breaks) → cluster (attach to one of the 18 roots before creating a new one) → root cause (name the generator: tool, template, default, brief) → land on the lowest rung that works (fix the generator; change the interface so the error cannot be expressed; add a test; add advice; deny last; a prose law only for judgment no code can hold) → gate lifecycle (a shadow period of 7 days or 50 would-be denies, precision at least 95 percent on a labelled sample, both-way fixtures in CI, p90 under 50 ms, demotion to shadow when the labelled precision of the last 50 denies falls under 95 percent, an override rate past 5 percent does no more than queue those denies for labelling, retirement after 30 days of zero true denies, a law never cited in 60 days to the archive) → verification chain, explicit (tests; a reviewer of a second model family on the exact head; CI on the exact head sha, completed, never queued; merge; a READY verdict carries the exact head and the list of completed checks) → memory and ledger. A denied call is never re-fired verbatim: the next call differs or asks; a refusal-retry guard holds it (section 3.3 counted 1,193 such near-identical retries in 14 days). Both from round 1, section 14. Ivo approves only consent, money, send, credential and seal gates, promotions from shadow to deny, and a weekly one-screen harness diff. [SIMULATED H3 adopted as the design; its thresholds are starting values to be measured.]</li>
+<li>Codify loop, automatic. Detect (correction turns, deny-then-override, the same tool error twice, rework within 24 hours, ratchet breaks) → cluster (attach to one of the 18 roots before creating a new one) → root cause (name the producing code: tool, template, default, brief) → land on the lowest rung that works (first mend the code itself; then reshape the interface so the mistake has no way to be written; then a test; then advice; a deny only after those; a written law solely where judgment is needed and no code can carry it) → gate lifecycle (a shadow period of 7 days or 50 would-be denies, precision at least 95 percent on a labelled sample, both-way fixtures in CI, p90 under 50 ms, demotion to shadow when the labelled precision of the last 50 denies falls under 95 percent, an override rate past 5 percent does no more than queue those denies for labelling, retirement after 30 days of zero true denies, a law never cited in 60 days to the archive) → verification chain, explicit (tests; a reviewer of a second model family on the exact head; CI on the exact head sha, completed, never queued; merge; a READY verdict carries the exact head and the list of completed checks) → memory and ledger. A denied call is never re-fired verbatim: the next call differs or asks; a refusal-retry guard holds it (section 3.3 counted 1,193 such near-identical retries in 14 days). Both from round 1, section 14. Ivo approves only consent, money, send, credential and seal gates, promotions from shadow to deny, and a weekly one-screen harness diff. [SIMULATED H3 adopted as the design; its thresholds are starting values to be measured.]</li>
 <li>One dispatch. One resident process per event type with the gates imported once (no per-gate interpreter start), lanes in parallel as the product does [READ, hooks.md], a 50 ms p90 budget per gate, and the repo hooks moved under the same dispatcher so no hook can time out silently. Every hook's manifest entry declares what it writes (paths or stores) or marks it pure, and a test regenerates the lane table from those declarations, so parallel lanes never race on one file; a hook that overruns its box denies (fail closed) and the dispatcher never drops that denial (round 1, section 14). The first act is to remove the four hooks of section 0 item 1.</li>
 <li>Law store in layers. L0, the prefix: identity, the 13 stop-sign laws, the router, under 12 thousand characters. L1, area laws in files loaded by path or tool (laws/, .claude/rules), each with a "last cited" stamp. L2, gates as code with tests and lifecycle. L3, memory and the ledger. Per-prompt injections (the graph reminder is about 10 KB on every prompt, at the hook output cap of 10,000 characters [READ]) are sent once per session and again only when their content changes.</li>
 <li>De-agenting layer: section 7.2, D1 to D10, built as hooks and a helper library. Every injected fact (D1 clock, D2 pack, D9 context pack) carries its as-of time and its source, and the model goes back to the source whenever that stamp is absent or old; D6 includes a durability check before any scratch deletion (receipts, a real backup, a restore check); peer messages are typed envelopes (kind, from, to, refs, body) validated by a hook, relays included (round 1, section 14).</li>
@@ -1365,6 +1368,48 @@ Covered since the first draft: the official pages of the 14 outside alternatives
 <li>S3 at 14:32, its result: four of five items done and tested both ways; the monthly archive job (item 3) is with an architect for its flow spec. The global law file went from 45,041 to 9,376 bytes with the 13 stop signs kept. A fresh first request in the tcs repo with the same toolset now costs 108,088 tokens; with the old file appended it costs 122,429, so the old law text weighed about 14,300 tokens and the new about 3,000, a saving of about 11,300 per first request. The store holds 1,793 laws in 62 files and renders them byte for byte; a Haiku refuter held it (152 of 156 bullets verbatim, 4 declared rewrites of section-5 laws, no token lost). Every one of 141 gate scripts names its law, live denies print the law id, and the ledger records each citation. Hooks: 201 manifest entries declared (174 write rows); a traced replay found all 102 writes declared after a refute caught 4 hidden writers; the Stop lanes keep shared writers together; the 36 tcs repo hooks too. Injections over a 20-prompt audit: 180,851 bytes, 9,042 per prompt, none unstamped; the skill catalog is 76,383 of them and the next cut, once the ledger has a read signal. Added hook wait: 2 ms per call for the layer loader after a 13 ms first load.</li>
 <li>S2 at 14:34, its result: items 0 to 4 done (5 and 6 were S1's, verified, not rebuilt). The ledger holds 722,151 events at schema 1; its hook rows equal the dispatch log over 24 hours (before-tool calls 27,008 with a median wait of 278 ms and a p90 of 999 ms; after-tool 24,305 at 167 and 619; stop 1,680 at 1,086 and 2,499). The telemetry collector exports only new sessions, so its first day-long comparison is due 22 October. All eight stores dual-write; the reconciliation came back clean for each over 104,151 records in 2.8 seconds; the earliest cut-over to views is 28 October after seven clean days. The ratchet runs on a three-day median; the scoreboard has 52 rows including the spread; the live dashboard was pushed at 12:29 UTC with four datasets, and a daily job raises an attention row when no push lands in 30 hours. Envelopes: 19 of 19 guard tests, a live deny and a live fill seen, the push guard and the chat-watch relay read and write them. The flow gate now passes a help call and quoted mentions. A keeper job runs every 15 minutes. Two corrections to S0's found list: the dispatch log keeps a month (597,485 lines since 23 September), not 24 hours; and every prefix cell sits over the 70,000 target, as section 3.2 shows. Open: the store views on 28 October; log rotation and a single collector writer, with an architect.</li>
 <li>S4 at 14:45, its result: five items built and tested. Telemetry: 19,363 verdict rows in seven days, 8,149 denies, 3,434 joined to their call; 1,020 labels from the Haiku judge over 54 gates, and a Haiku recheck at higher effort agreed on 35 of 40. Lifecycle: 20 gates carry 20 or more labels and 11 sit under 95 percent precision (the shell guard 74, the safe-file rewrite 50, the PR-ready proof 72, the bb-use guard 92, the orchestrator guard 94, the clock guard 2 but its labels are unreliable since the judge cannot read the clock, the PR review law 77, the instruction budget 62, the workflow guard 76, the backtick guard 90, and the send guard, which is an exempt class and never moves). Ten demotions to shadow are logged as proposals and move only on the owner's quoted word for decision 3. Time box: an overrun now denies the call and holds one stop; no live overrun yet; 30 gates are over the 50 ms p90 budget, the worst four between 291 and 358 ms. Verification chain: a READY needs the proof, a second-family review, completed CI and the required checks, all on the exact head, and the merge pins that head; one live PR was refused while a check was still running. Audit: the 13 stop-sign laws and their 10 gates all have both-way tests; across all 141 gates, 28 lack both-way tests and 24 lack a kill switch. One defect handed back to Mind: the dispatcher's rewrite composer read a deleted key the same as a key set to null (fixed the same hour, see the Found list).</li>
+</ul>
+<h3 id="s8-reading-wave-folded-in-22-oct-the-s8-session-mind-s8-self-checks">S8 reading wave folded in, 22 Oct (the S8 session, Mind S8 Self Checks)</h3>
+<p>Six Haiku readers read 14 live doc pages and the terms (one reader per surface). A raw-curl refuter re-fetched every load-bearing fact: all 10 sources returned 200, and 3 wordings were corrected. Labels: [READ] each with its URL.
+- Cache [READ, https://code.claude.com/docs/en/prompt-caching.md]: the page lists nine cache breakers: model switch, effort change, fast mode, an MCP server connected or removed, a plugin enabled or disabled, a whole tool denied, compaction, many images, and a Claude Code upgrade. "Caches are isolated between organizations", so a seat move to another org rewrites the cache. That fits the measured seat_rotation busts (49 in 24 h). Past the usage limit, work drawing on usage credits drops the main conversation to the five-minute TTL. Account or token switching is not named. Change to section 8, item 6: rotate seats only at a session boundary (unchanged). Change to 9.1 part 2: the cache-hygiene class watches effort changes, plugin syncs and MCP reconnects as named causes.
+- Transcripts [READ, https://code.claude.com/docs/en/sessions.md]: "The entry format is internal to Claude Code and changes between versions, so scripts that parse these files directly can break on any release." The scoreboard, the miner, the codify loop and the self checks all parse transcripts. Change to 9.1 part 1: OpenTelemetry into the ledger becomes the primary source wherever it carries the field; transcript parsing stays as a fallback with a version-pinned test.
+- Memory [READ, https://code.claude.com/docs/en/memory.md]: MEMORY.md loads "the first 200 lines ... or the first 25KB, whichever comes first", and the rest is dropped on the next load. Path-scoped rules (<code>paths</code> frontmatter) load on a Read, Write or Edit of a matching file: a native lane for path-shaped L1 areas. l1_inject keeps the topic-shaped areas.
+- Context [READ, https://code.claude.com/docs/en/context-window.md]: compaction summarizes path-scoped rules and nested CLAUDE.md files away until they reload. Invoked skills are re-injected after compaction, capped at 5,000 tokens each and 25,000 in total.
+- Schedules [READ, https://code.claude.com/docs/en/scheduled-tasks.md]: session tasks fire only while the session runs. They expire 7 days after creation, missed fires are not caught up, and the cap is 50 per session. Backgrounding the session carries <code>/loop</code> tasks over. automations.py on the OS scheduler stays the home for machine-level jobs. Desktop scheduled tasks were not read: an open question, below.
+- Messaging [READ, https://code.claude.com/docs/en/cross-session-messaging.md]: plain text only, at most 100 held messages, and a native one-shot notice when a session next goes idle or exits (dropped after 12 h). The typed JSON envelope rides inside plain text; nothing changes.
+- Workflows and limits [READ, https://code.claude.com/docs/en/workflows.md, env-vars.md]: 16 agents at once by default (fewer on fewer CPUs), 1,000 per run and 4,096 items per call. A workflow agent's cache lasts 5 minutes unless <code>subagentPromptCacheTtl</code> is <code>1h</code>. The subagent spawn depth defaults to 3. Correction to section 5's NOT DOCUMENTED line: <code>skillListingBudgetFraction</code>, <code>CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH</code> (default 4096, 16384 for tools loaded through tool search) and <code>CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS</code> (1 to 256) are documented now.
+- Goal and checkpoints [READ, goal.md, checkpointing.md]: one goal per session, a condition of up to 4,000 characters, and an evaluator that cannot run commands. Checkpoints do not track Bash file changes or other sessions' edits.
+- Setup tokens and terms, decision 2 [READ, https://www.anthropic.com/legal/consumer-terms, /legal/aup, /legal/commercial-terms, https://code.claude.com/docs/en/authentication.md]: the Consumer Terms forbid sharing account credentials and access "through automated or non-human means, whether through a bot, script, or otherwise", "Except when you are accessing our Services via an Anthropic API Key or where we otherwise explicitly permit it". The AUP forbids creating "multiple accounts, to avoid detection, circumvent product guardrails". Under the Commercial Terms the customer "is responsible for all activity under its account", with no automation or per-seat clause in the text read. A setup token "can only make model requests" and is a "one-year OAuth token"; no revocation is documented. NOT DOCUMENTED: whether rotating company seats to stay under usage limits is allowed. Change to section 8's recommendation: before the five rotating seats move to setup tokens, get a written answer from Anthropic on seat rotation (a usage limit may count as a product guardrail). The token type does not change this exposure; the rotation itself is the open question. Report only: no token was minted or imported.
+- Correction and rework census [MEASURED, mind-checks/rework_census.py, codify_loop.detect read-only]: 956 main transcripts on disk (sessions are kept 30 days, so "all-time" means what is still on disk). They hold 131 correction turns in 72 sessions and 26 rework-within-24-hour turns in 12 sessions, plus 819 deny-then-override, 662 same-error-twice and 1,426 uncodified turns. Weekly corrections W40 to W43: 17, 20, 13, 24 (W43 partial).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Open question</th>
+<th>Owner</th>
+<th>By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Desktop scheduled tasks and agent-view (background agents) pages, against automations.py and session_tree</td>
+<td>Mind S8 follow-up, one Haiku reader</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Written answer from Anthropic on rotating company seats to stay under usage limits</td>
+<td>Ivo (decision 2)</td>
+<td>before any setup-token import</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="round-4-sent-22-oct-afternoon-the-rename-the-self-improvement-job-the-research-pass">Round 4 sent - 22 Oct, afternoon (the rename, the self-improvement job, the research pass)</h3>
+<ul>
+<li>The harness is called the mind. The private repo is renamed, the mirror moved, and every old name (repo, mirror path, job ids, board name, tool names) still resolves through an alias; a builder is carrying the rename through the laws, tools and docs with tests both ways, and the push job is paused until it returns.</li>
+<li>The mind improves itself on a schedule from today: a daily job at 09:10 with sixteen proven steps in five phases. SENSE reads the scoreboard, the nightly checks, new links in the Chrome bookmark folder and the three news readers. PROPOSE ranks the teacher's proposals by n x the kept rate of their root kind (the Harness^2 experience library, applied as a ranking). APPLY ships only behind a test that fails first and routes the five exempt classes, owner-held rows and anything that needs a download, install or payment to the decisions line. VERIFY re-runs each recent change's test and reverts a change whose test fails or whose claimed cost row rose, in the same run; the ratchet may only fall. RECORD writes the sweep row and the history line per change, asks for the push, and puts one line a day on the decisions board. Kill switch for the whole run and one per phase. Min-max named in the spec: verify cannot yet tie a risen row to one change (fix: record claimed rows at apply time); nothing has shipped through it yet, so apply, revert and push are proven on test data only.</li>
+<li>A research pass over seven surfaces (changelog 2.1.285 to 2.1.308, the docs, Anthropic's October posts, the ecosystem repos, five papers, two X timelines, the claude-api skill) judged 28 upgrades: 6 applied today, 10 already in place, 4 proposals with a named measure, 6 refused with the reason, 1 deferred (agent teams, still experimental), 1 not applicable. Ten load-bearing claims were re-fetched by a second reader; two wordings were corrected (the Harness^2 ablation is 3.1 and 1.8 points on its two benchmarks, not 3.1 on both; the docs never call the prompt audit interactive-only, only our headless probe failed to run it).</li>
+<li>Applied today from that pass: cache-miss reasons named on every bust in the cost ledger; a nightly dated-configuration check (retired model ids, manual thinking budgets) with one live fossil fixed in the seat probe; a fake-edge lint over flow graphs; the prompt audit of the prefix as 13 contradiction, fossil and duplicate findings for the teacher; a generated spawn brief now leads with every gate line.</li>
+<li>Found on the way: the daily news-apply session had not started for two days. A brief gate added on 15 Oct wanted a line the generated brief did not carry, and the launcher's log said only "did not start"; the digest's own record held the reason. Fixed with tests; lesson recorded: when a scheduled job reports a child that did not start, read the job's own record before the launcher's code, and a new brief gate adds a test against every generated brief.</li>
+<li>Open for round 5 from their side: how their loop decides what to try next and what it reverts; whether they audit their prefix for fossils and contradictions on a schedule; how outside posts and changelog items enter their queue. The ask: three things they would lift from ours and three they would not, each with the why.</li>
 </ul>
 </main>
 </body>
